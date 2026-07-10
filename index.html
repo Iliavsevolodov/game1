@@ -203,7 +203,7 @@
       box-shadow:inset 0 2px 3px rgba(0,0,0,.5);
     }
 
-    .selected .nut:last-child { transform:translateY(-13px) rotate(-3deg); }
+    .selected .nut.move-group { transform:translateY(-13px) rotate(-3deg); }
 
     .controls {
       max-width:980px;
@@ -410,10 +410,12 @@
         base.className = 'base';
         const nuts = document.createElement('div');
         nuts.className = 'nuts';
+        const selectedGroupSize = selected === index ? getTopGroupSize(tube) : 0;
 
-        tube.forEach(colorIndex => {
+        tube.forEach((colorIndex, nutIndex) => {
           const nut = document.createElement('div');
           nut.className = 'nut';
+          if (selectedGroupSize && nutIndex >= tube.length - selectedGroupSize) nut.classList.add('move-group');
           nut.style.setProperty('--c', COLORS[colorIndex]);
           nuts.appendChild(nut);
         });
@@ -426,11 +428,33 @@
 
     function topColor(tube) { return tube[tube.length - 1]; }
 
+    function getTopGroupSize(tube) {
+      if (tube.length === 0) return 0;
+      const color = topColor(tube);
+      let count = 0;
+      for (let i = tube.length - 1; i >= 0 && tube[i] === color; i--) count++;
+      return count;
+    }
+
+    function getMoveCount(from, to) {
+      if (from === to) return 0;
+      if (tubes[from].length === 0) return 0;
+      if (tubes[to].length >= CAPACITY) return 0;
+      if (tubes[to].length > 0 && topColor(tubes[from]) !== topColor(tubes[to])) return 0;
+
+      const sameColorGroup = getTopGroupSize(tubes[from]);
+      const freeSpace = CAPACITY - tubes[to].length;
+      return Math.min(sameColorGroup, freeSpace);
+    }
+
     function canMove(from, to) {
-      if (from === to) return false;
-      if (tubes[from].length === 0) return false;
-      if (tubes[to].length >= CAPACITY) return false;
-      return tubes[to].length === 0 || topColor(tubes[from]) === topColor(tubes[to]);
+      return getMoveCount(from, to) > 0;
+    }
+
+    function formatNutCount(count) {
+      if (count === 1) return '1 гайка';
+      if (count >= 2 && count <= 4) return `${count} гайки`;
+      return `${count} гаек`;
     }
 
     function handleTube(index, el) {
@@ -439,7 +463,10 @@
       if (selected === null) {
         if (tubes[index].length === 0) return showToast('Здесь пока нет гаек');
         selected = index;
-        hintline.textContent = 'Теперь выбери стержень, куда перенести гайку';
+        const groupCount = getTopGroupSize(tubes[index]);
+        hintline.textContent = groupCount > 1
+          ? `Выбрана группа: ${formatNutCount(groupCount)} одного цвета`
+          : 'Теперь выбери стержень, куда перенести гайку';
         render();
         return;
       }
@@ -452,7 +479,8 @@
       }
 
       const from = selected;
-      if (!canMove(from, index)) {
+      const moveCount = getMoveCount(from, index);
+      if (!moveCount) {
         selected = null;
         hintline.textContent = 'Такой ход нельзя сделать';
         render();
@@ -463,10 +491,11 @@
       }
 
       history.push({ state: cloneState(tubes), moves });
-      tubes[index].push(tubes[from].pop());
+      const movingNuts = tubes[from].splice(tubes[from].length - moveCount, moveCount);
+      tubes[index].push(...movingNuts);
       moves++;
       selected = null;
-      hintline.textContent = 'Хороший ход!';
+      hintline.textContent = moveCount > 1 ? `Перенесено сразу: ${formatNutCount(moveCount)}` : 'Хороший ход!';
       render();
 
       if (isSolved(tubes)) {
@@ -505,11 +534,12 @@
       const result = [];
       for (let from = 0; from < tubes.length; from++) {
         for (let to = 0; to < tubes.length; to++) {
-          if (!canMove(from, to)) continue;
+          const count = getMoveCount(from, to);
+          if (!count) continue;
           const movingColor = topColor(tubes[from]);
           const joinsSame = tubes[to].length > 0 && topColor(tubes[to]) === movingColor;
-          const exposesDifferent = tubes[from].length > 1 && tubes[from][tubes[from].length - 2] !== movingColor;
-          result.push({ from, to, score: (joinsSame ? 4 : 0) + (exposesDifferent ? 2 : 0) - (tubes[to].length === 0 ? 1 : 0) });
+          const exposesDifferent = tubes[from].length > count && tubes[from][tubes[from].length - count - 1] !== movingColor;
+          result.push({ from, to, count, score: (count * 3) + (joinsSame ? 4 : 0) + (exposesDifferent ? 2 : 0) - (tubes[to].length === 0 ? 1 : 0) });
         }
       }
       return result.sort((a,b) => b.score - a.score);
@@ -519,7 +549,7 @@
       const move = getPossibleMoves()[0];
       if (!move) return showToast('Доступных ходов нет — попробуй отменить ход');
       selected = move.from;
-      hintline.textContent = `Подсказка: перенеси гайку со стержня ${move.from + 1} на ${move.to + 1}`;
+      hintline.textContent = `Подсказка: перенеси ${formatNutCount(move.count)} со стержня ${move.from + 1} на ${move.to + 1}`;
       render();
       const target = boardEl.children[move.to];
       target?.animate([
