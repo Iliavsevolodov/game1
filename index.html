@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f172a" />
   <title>Nut Sort — сортировка гаек</title>
   <style>
@@ -11,58 +11,42 @@
       --bg-2:#1e293b;
       --panel:rgba(255,255,255,.09);
       --panel-border:rgba(255,255,255,.16);
-      --text:#f9fafb;
+      --text:#f8fafc;
       --muted:#cbd5e1;
       --accent:#facc15;
-      --danger:#fb7185;
       --success:#4ade80;
-      --shadow:0 22px 70px rgba(0,0,0,.38);
-      --app-height:100svh;
+      --shadow:0 22px 60px rgba(0,0,0,.38);
     }
 
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     html, body {
       margin:0;
-      width:100%;
-      height:100%;
+      min-height:100%;
       background:#0f172a;
       color:var(--text);
       font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      min-height:100dvh;
       overflow:hidden;
       overscroll-behavior:none;
       touch-action:manipulation;
     }
 
-    body {
-      position:fixed;
-      inset:0;
-      -webkit-user-select:none;
-      user-select:none;
-    }
-
-    button {
-      font:inherit;
-      appearance:none;
-      -webkit-appearance:none;
-    }
-
     .app {
-      width:100%;
-      height:var(--app-height);
-      min-height:var(--app-height);
-      padding:max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      min-height:100dvh;
+      padding:max(16px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
       background:
-        radial-gradient(circle at 18% 0%, rgba(250,204,21,.16), transparent 28%),
-        radial-gradient(circle at 82% 14%, rgba(56,189,248,.15), transparent 30%),
-        radial-gradient(circle at 50% 100%, rgba(124,58,237,.16), transparent 38%),
+        radial-gradient(circle at 16% 0%, rgba(250,204,21,.16), transparent 28%),
+        radial-gradient(circle at 84% 12%, rgba(56,189,248,.14), transparent 32%),
+        radial-gradient(circle at 50% 100%, rgba(124,58,237,.14), transparent 38%),
         linear-gradient(180deg, var(--bg-1), var(--bg-2));
-      display:grid;
-      grid-template-rows:auto minmax(0,1fr) auto;
-      gap:12px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      overflow:hidden;
       position:relative;
       isolation:isolate;
-      overflow:hidden;
-      contain:layout paint size;
     }
 
     .app::before {
@@ -70,10 +54,20 @@
       position:fixed;
       inset:0;
       pointer-events:none;
-      background-image:linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
       background-size:34px 34px;
-      mask-image:linear-gradient(180deg, transparent, #000 16%, #000 78%, transparent);
+      mask-image:linear-gradient(180deg, transparent, #000 16%, #000 82%, transparent);
       z-index:-1;
+    }
+
+    .topbar,
+    .card,
+    .controls {
+      width:100%;
+      max-width:980px;
+      margin:0 auto;
     }
 
     .topbar {
@@ -81,149 +75,118 @@
       grid-template-columns:1fr auto 1fr;
       align-items:center;
       gap:12px;
-      max-width:980px;
-      width:100%;
-      margin:0 auto;
-      animation:softFade .45s cubic-bezier(.2,.9,.2,1) both;
-      flex-shrink:0;
+      animation:fadeSlide .55s cubic-bezier(.2,.9,.2,1) both;
     }
 
-    .brand { font-size:clamp(22px, 5vw, 34px); font-weight:1000; letter-spacing:-.045em; text-shadow:0 8px 30px rgba(0,0,0,.35); }
-    .brand span { color:var(--accent); filter:drop-shadow(0 8px 22px rgba(250,204,21,.28)); }
+    .brand {
+      font-size:clamp(22px, 5vw, 34px);
+      font-weight:1000;
+      letter-spacing:-.045em;
+      text-shadow:0 8px 30px rgba(0,0,0,.35);
+    }
+    .brand span {
+      color:var(--accent);
+      filter:drop-shadow(0 8px 22px rgba(250,204,21,.28));
+    }
+
+    .level-pill,
+    .card,
+    .btn {
+      backdrop-filter:blur(18px);
+    }
 
     .level-pill {
       justify-self:center;
-      background:linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.07));
-      border:1px solid var(--panel-border);
-      padding:9px 14px;
+      padding:10px 16px;
       border-radius:999px;
-      backdrop-filter:blur(16px);
+      background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+      border:1px solid var(--panel-border);
       font-weight:900;
-      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.22);
       white-space:nowrap;
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.22);
     }
 
-    .stats { justify-self:end; text-align:right; color:var(--muted); font-weight:800; font-size:14px; }
-    .stats strong { color:var(--text); font-size:18px; }
+    .stats {
+      justify-self:end;
+      text-align:right;
+      color:var(--muted);
+      font-weight:800;
+      font-size:14px;
+    }
+    .stats strong {
+      color:var(--text);
+      font-size:18px;
+    }
 
     .card {
-      max-width:980px;
-      width:100%;
-      height:100%;
-      min-height:0;
-      margin:0 auto;
-      padding:12px;
+      padding:14px;
       border-radius:28px;
       border:1px solid var(--panel-border);
       background:
         linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.055)),
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,.12), transparent 46%);
-      backdrop-filter:blur(20px);
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.12), transparent 44%);
       box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.18);
       position:relative;
       overflow:hidden;
-      display:grid;
-      grid-template-rows:auto minmax(0,1fr);
-      contain:layout paint;
     }
 
     .card::before {
       content:"";
       position:absolute;
-      inset:auto -10% -38px -10%;
-      height:115px;
+      inset:auto -12% -40px -12%;
+      height:118px;
       background:
-        linear-gradient(90deg, rgba(120,53,15,.26), rgba(217,119,6,.22), rgba(120,53,15,.26)),
-        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 2px, transparent 2px 46px);
-      filter:blur(.2px);
+        linear-gradient(90deg, rgba(120,53,15,.24), rgba(217,119,6,.20), rgba(120,53,15,.24)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 2px, transparent 2px 46px);
       opacity:.75;
       pointer-events:none;
     }
 
     .hintline {
+      min-height:26px;
       text-align:center;
       color:var(--muted);
       font-weight:850;
-      min-height:28px;
-      line-height:28px;
-      margin-bottom:2px;
-      transition:color .25s ease, opacity .25s ease;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      margin-bottom:4px;
+      padding-inline:8px;
     }
-
-    .hintline.pop { animation:hintPop .34s cubic-bezier(.2,.9,.2,1) both; }
+    .hintline.pop { animation:hintPop .5s cubic-bezier(.2,.9,.2,1) both; }
 
     .board {
       display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(72px, 1fr));
-      gap:18px 10px;
+      grid-template-columns:repeat(auto-fit, minmax(74px, 1fr));
+      gap:22px 12px;
       align-items:end;
       justify-items:center;
-      width:100%;
-      min-height:0;
-      padding:16px 4px 12px;
+      min-height:470px;
+      padding:18px 2px 14px;
       position:relative;
-      perspective:950px;
-      overflow:hidden;
+      perspective:1200px;
       contain:layout paint;
     }
 
     .tube {
       position:relative;
       width:76px;
-      height:230px;
+      height:232px;
       border:0;
       background:transparent;
       padding:0;
       cursor:pointer;
       display:flex;
-      flex-direction:column;
       justify-content:flex-end;
       align-items:center;
-      transition:filter .22s ease;
       touch-action:manipulation;
       transform-style:preserve-3d;
-      transform:translateZ(0);
-      outline:none;
-      flex-shrink:0;
+      transition:filter .34s ease, transform .34s ease;
     }
-
-    .tube::before {
-      content:"";
-      position:absolute;
-      inset:-10px 2px -4px;
-      border-radius:28px;
-      border:1px solid transparent;
-      background:linear-gradient(180deg, rgba(250,204,21,0), rgba(250,204,21,0));
-      opacity:0;
-      transition:opacity .22s ease, background .22s ease, border-color .22s ease;
-      pointer-events:none;
-      z-index:0;
-    }
-
-    @media (hover:hover) and (pointer:fine) {
-      .tube:hover::before {
-        opacity:.55;
-        border-color:rgba(255,255,255,.10);
-        background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
-      }
-    }
-
+    .tube:hover { filter:brightness(1.03); }
     .tube.selected {
-      filter:drop-shadow(0 18px 22px rgba(250,204,21,.30));
+      filter:drop-shadow(0 0 0 rgba(0,0,0,0)) drop-shadow(0 12px 20px rgba(250,204,21,.18));
+      transform:scale(1.015);
     }
-
-    .tube.selected::before {
-      opacity:1;
-      border-color:rgba(250,204,21,.55);
-      background:linear-gradient(180deg, rgba(250,204,21,.16), rgba(250,204,21,.035));
-      box-shadow:0 0 0 1px rgba(250,204,21,.06), 0 18px 38px rgba(250,204,21,.10);
-    }
-
-    .tube.invalid { animation:shake .28s linear 1; }
-    .tube.tube-enter { animation:tubeInStable .5s cubic-bezier(.18,.9,.22,1.18) both; }
+    .tube.invalid { animation:shake .38s cubic-bezier(.36,.07,.19,.97) 1; }
+    .tube.tube-enter { animation:tubeIn .72s cubic-bezier(.18,.9,.22,1.14) both; }
 
     .tube.complete::after {
       content:"✓";
@@ -240,7 +203,7 @@
       font-weight:1000;
       box-shadow:0 8px 22px rgba(74,222,128,.42), inset 0 1px 0 rgba(255,255,255,.65);
       z-index:8;
-      animation:completePop .55s cubic-bezier(.2,.9,.2,1) both;
+      animation:completePop .68s cubic-bezier(.2,.9,.2,1) both;
     }
 
     .rod {
@@ -248,18 +211,27 @@
       left:50%;
       bottom:18px;
       transform:translateX(-50%);
-      width:13px;
-      height:200px;
+      width:12px;
+      height:198px;
       border-radius:999px;
       background:
-        linear-gradient(90deg, #737373 0%, #f8fafc 18%, #d4d4d8 42%, #ffffff 52%, #8b8b8b 100%),
-        repeating-linear-gradient(180deg, transparent 0 3px, rgba(0,0,0,.28) 3px 6px);
-      background-blend-mode:screen,normal;
-      box-shadow:inset -4px 0 3px rgba(0,0,0,.28), inset 3px 0 3px rgba(255,255,255,.38), 0 12px 22px rgba(0,0,0,.36);
+        linear-gradient(90deg, #7c7c7c 0%, #fbfbfb 18%, #d9d9df 38%, #ffffff 52%, #a3a3ad 70%, #6f6f76 100%);
+      box-shadow:
+        inset 2px 0 2px rgba(255,255,255,.45),
+        inset -3px 0 4px rgba(0,0,0,.28),
+        0 10px 18px rgba(0,0,0,.28);
       z-index:1;
+      overflow:hidden;
     }
-
     .rod::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:repeating-linear-gradient(180deg, transparent 0 4px, rgba(0,0,0,.15) 4px 6px);
+      mix-blend-mode:multiply;
+      opacity:.6;
+    }
+    .rod::after {
       content:"";
       position:absolute;
       left:50%;
@@ -268,23 +240,22 @@
       width:20px;
       height:10px;
       border-radius:50%;
-      background:radial-gradient(ellipse at 42% 28%, #fff 0 20%, #d4d4d8 42%, #71717a 100%);
-      box-shadow:0 3px 5px rgba(0,0,0,.34);
+      background:radial-gradient(ellipse at 45% 25%, #fff 0 20%, #d8d8de 40%, #74747b 100%);
+      box-shadow:0 3px 5px rgba(0,0,0,.32);
     }
 
     .base {
       position:absolute;
       left:50%;
-      bottom:5px;
+      bottom:4px;
       transform:translateX(-50%);
       width:68px;
       height:20px;
       border-radius:50% 50% 18px 18px;
-      background:radial-gradient(ellipse at 42% 20%, #fafafa 0 12%, #d6d3d1 42%, #71717a 100%);
-      box-shadow:0 9px 16px rgba(0,0,0,.36), inset 0 3px 4px rgba(255,255,255,.62), inset 0 -5px 6px rgba(0,0,0,.22);
+      background:radial-gradient(ellipse at 42% 20%, #fafafa 0 12%, #dbd8d5 42%, #72727a 100%);
+      box-shadow:0 10px 18px rgba(0,0,0,.35), inset 0 3px 4px rgba(255,255,255,.62), inset 0 -5px 6px rgba(0,0,0,.20);
       z-index:2;
     }
-
     .base::after {
       content:"";
       position:absolute;
@@ -299,15 +270,14 @@
       position:absolute;
       left:50%;
       bottom:21px;
-      transform:translateX(-50%) rotateX(1deg);
+      transform:translateX(-50%);
       width:62px;
       display:flex;
       flex-direction:column-reverse;
       align-items:center;
       z-index:3;
       pointer-events:none;
-      transform-style:preserve-3d;
-      filter:drop-shadow(0 12px 16px rgba(0,0,0,.22));
+      filter:drop-shadow(0 12px 16px rgba(0,0,0,.20));
     }
 
     .nut {
@@ -317,41 +287,39 @@
       position:relative;
       clip-path:polygon(15% 7%,85% 7%,100% 50%,85% 93%,15% 93%,0 50%);
       background:
-        radial-gradient(ellipse at 28% 15%, rgba(255,255,255,.58) 0 10%, transparent 28%),
-        linear-gradient(90deg, rgba(0,0,0,.36) 0%, rgba(255,255,255,.22) 16%, rgba(255,255,255,.34) 38%, rgba(0,0,0,.10) 64%, rgba(0,0,0,.40) 100%),
-        linear-gradient(180deg, rgba(255,255,255,.20) 0%, transparent 38%, rgba(0,0,0,.26) 100%),
+        radial-gradient(ellipse at 28% 16%, rgba(255,255,255,.58) 0 10%, transparent 30%),
+        linear-gradient(90deg, rgba(0,0,0,.35) 0%, rgba(255,255,255,.22) 16%, rgba(255,255,255,.34) 38%, rgba(0,0,0,.10) 64%, rgba(0,0,0,.40) 100%),
+        linear-gradient(180deg, rgba(255,255,255,.20) 0%, transparent 38%, rgba(0,0,0,.24) 100%),
         var(--c);
       box-shadow:
         inset 0 7px 8px rgba(255,255,255,.28),
-        inset 0 -8px 9px rgba(0,0,0,.30),
+        inset 0 -8px 9px rgba(0,0,0,.28),
         inset 8px 0 10px rgba(255,255,255,.10),
         inset -8px 0 10px rgba(0,0,0,.24),
         0 5px 8px rgba(0,0,0,.34);
-      transition:transform .24s cubic-bezier(.2,.9,.2,1), filter .24s ease, opacity .18s ease;
+      transition:transform .42s cubic-bezier(.2,.9,.2,1), filter .42s ease, opacity .24s ease;
       transform-style:preserve-3d;
       will-change:transform;
     }
-
     .nut::before {
       content:"";
       position:absolute;
       inset:3px 5px;
       clip-path:inherit;
       background:
-        linear-gradient(180deg, rgba(255,255,255,.24), transparent 34%, rgba(0,0,0,.16)),
-        radial-gradient(ellipse at 50% 50%, transparent 0 26%, rgba(255,255,255,.20) 29% 34%, transparent 38%);
-      opacity:.9;
+        linear-gradient(180deg, rgba(255,255,255,.24), transparent 34%, rgba(0,0,0,.14)),
+        radial-gradient(ellipse at 50% 50%, transparent 0 26%, rgba(255,255,255,.18) 29% 34%, transparent 38%);
+      opacity:.92;
       pointer-events:none;
     }
-
     .nut::after {
       content:"";
       position:absolute;
       left:50%;
       top:50%;
       transform:translate(-50%,-50%);
-      width:18px;
-      height:18px;
+      width:17px;
+      height:17px;
       border-radius:50%;
       background:
         radial-gradient(circle at 45% 42%, #111827 0 30%, #6b7280 31% 45%, #f8fafc 48% 60%, rgba(255,255,255,.15) 66%),
@@ -359,10 +327,10 @@
       box-shadow:inset 0 3px 5px rgba(0,0,0,.68), 0 1px 2px rgba(255,255,255,.42);
     }
 
-    .nut.nut-enter { animation:nutDropStable .52s cubic-bezier(.16,1.08,.28,1.08) both; }
+    .nut.nut-enter { animation:nutDrop .82s cubic-bezier(.16,1.04,.28,1.02) both; }
     .nut.move-group { filter:brightness(1.08) saturate(1.08); }
-    .selected .nut.move-group { transform:translateY(-16px) rotateZ(-4deg) rotateX(16deg) scale(1.03); }
-    .selected .nut.move-group:nth-last-child(2) { transform:translateY(-13px) rotateZ(3deg) rotateX(14deg) scale(1.025); }
+    .selected .nut.move-group { transform:translateY(-8px) rotateZ(-3deg) scale(1.02); }
+    .selected .nut.move-group:nth-last-child(2) { transform:translateY(-6px) rotateZ(3deg) scale(1.015); }
     .landing-ghost { opacity:0; }
 
     .fly-nut {
@@ -371,19 +339,14 @@
       z-index:999;
       pointer-events:none;
       will-change:transform;
-      filter:drop-shadow(0 24px 18px rgba(0,0,0,.35)) saturate(1.08);
-      contain:paint;
+      filter:drop-shadow(0 22px 18px rgba(0,0,0,.34)) saturate(1.08);
     }
 
     .controls {
-      max-width:980px;
-      width:100%;
-      margin:0 auto;
       display:grid;
       grid-template-columns:repeat(4, minmax(0,1fr));
       gap:10px;
-      animation:softFade .45s cubic-bezier(.2,.9,.2,1) both;
-      flex-shrink:0;
+      animation:fadeUp .6s cubic-bezier(.2,.9,.2,1) both;
     }
 
     .btn {
@@ -393,16 +356,21 @@
       padding:10px 12px;
       background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.07));
       color:var(--text);
+      font:inherit;
       font-weight:900;
       cursor:pointer;
       box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.18);
-      transition:filter .16s ease, box-shadow .16s ease;
-      outline:none;
+      transition:transform .24s ease, box-shadow .24s ease, filter .24s ease;
     }
-    .btn:hover { filter:brightness(1.06); box-shadow:0 14px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.22); }
-    .btn:active { filter:brightness(.96); }
-    .btn.primary { background:linear-gradient(180deg,#fde047,#eab308); color:#201a00; border-color:transparent; box-shadow:0 14px 34px rgba(250,204,21,.24), inset 0 1px 0 rgba(255,255,255,.52); }
-    .btn:disabled { opacity:.42; cursor:not-allowed; filter:none; }
+    .btn:hover { transform:translateY(-1px); box-shadow:0 14px 30px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.22); }
+    .btn:active { transform:scale(.99); }
+    .btn.primary {
+      background:linear-gradient(180deg,#fde047,#eab308);
+      color:#201a00;
+      border-color:transparent;
+      box-shadow:0 14px 34px rgba(250,204,21,.24), inset 0 1px 0 rgba(255,255,255,.52);
+    }
+    .btn:disabled { opacity:.42; cursor:not-allowed; transform:none; }
 
     .modal {
       position:fixed;
@@ -413,7 +381,6 @@
       background:rgba(2,6,23,.68);
       backdrop-filter:blur(10px);
       z-index:20;
-      overflow:hidden;
     }
     .modal.show { display:grid; }
     .modal-box {
@@ -426,7 +393,7 @@
         linear-gradient(180deg,#ffffff,#e5e7eb);
       color:#111827;
       box-shadow:0 34px 90px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.75);
-      animation:modalPopStable .42s cubic-bezier(.18,.9,.2,1.18) both;
+      animation:modalPop .56s cubic-bezier(.18,.9,.2,1.18) both;
       position:relative;
       overflow:hidden;
     }
@@ -438,7 +405,7 @@
       height:220%;
       background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
       transform:rotate(18deg);
-      animation:shine 1.5s ease .22s both;
+      animation:shine 1.8s ease .24s both;
     }
     .modal-box h2 { margin:0 0 8px; font-size:34px; }
     .modal-box p { margin:0 0 18px; color:#475569; font-weight:700; }
@@ -455,7 +422,7 @@
       border-radius:999px;
       font-weight:900;
       box-shadow:0 15px 40px rgba(0,0,0,.35);
-      transition:transform .25s cubic-bezier(.2,.9,.2,1);
+      transition:transform .34s cubic-bezier(.2,.9,.2,1);
       z-index:30;
       white-space:nowrap;
     }
@@ -473,48 +440,47 @@
       animation:confettiFall var(--fall, 1.6s) linear forwards;
     }
 
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px) rotateZ(-2deg)} 75%{transform:translateX(8px) rotateZ(2deg)} }
-    @keyframes softFade { from{opacity:0} to{opacity:1} }
-    @keyframes tubeInStable { from{opacity:0; filter:blur(6px)} to{opacity:1; filter:none} }
-    @keyframes nutDropStable { 0%{opacity:0; transform:translateY(-28px) scale(.9) rotateZ(-8deg)} 68%{opacity:1; transform:translateY(3px) scale(1.035) rotateZ(2deg)} 100%{opacity:1; transform:none} }
-    @keyframes completePop { 0%{opacity:0; transform:scale(.2) rotate(-30deg)} 70%{opacity:1; transform:scale(1.18) rotate(8deg)} 100%{opacity:1; transform:scale(1) rotate(0)} }
-    @keyframes modalPopStable { from{opacity:0; transform:scale(.94)} to{opacity:1; transform:none} }
-    @keyframes hintPop { 0%{opacity:.72; color:var(--muted)} 50%{opacity:1; color:#fff} 100%{opacity:1; color:var(--muted)} }
+    @keyframes shake {
+      0%,100% { transform:translateX(0) scale(1.015); }
+      25% { transform:translateX(-8px) scale(1.015); }
+      75% { transform:translateX(8px) scale(1.015); }
+    }
+    @keyframes fadeSlide { from{opacity:0; transform:translateY(-14px)} to{opacity:1; transform:none} }
+    @keyframes fadeUp { from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+    @keyframes tubeIn { from{opacity:0; transform:translateY(28px) scale(.96)} to{opacity:1; transform:none} }
+    @keyframes nutDrop {
+      0% { opacity:0; transform:translateY(-40px) scale(.9) rotateZ(-8deg); }
+      68% { opacity:1; transform:translateY(4px) scale(1.03) rotateZ(3deg); }
+      100% { opacity:1; transform:none; }
+    }
+    @keyframes completePop {
+      0% { opacity:0; transform:scale(.2) rotate(-30deg); }
+      70% { opacity:1; transform:scale(1.14) rotate(6deg); }
+      100% { opacity:1; transform:scale(1) rotate(0); }
+    }
+    @keyframes modalPop { from{opacity:0; transform:translateY(18px) scale(.92)} to{opacity:1; transform:none} }
+    @keyframes hintPop { 0%{transform:scale(.985)} 50%{transform:scale(1.018); color:#fff} 100%{transform:scale(1); color:var(--muted)} }
     @keyframes shine { from{transform:translateX(0) rotate(18deg)} to{transform:translateX(260%) rotate(18deg)} }
     @keyframes confettiFall { to{transform:translate3d(var(--drift), 108vh, 0) rotate(740deg); opacity:.15} }
 
     @media (max-width:600px) {
-      .app { padding:max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); gap:10px; }
       .topbar { grid-template-columns:1fr auto; }
-      .level-pill { order:3; grid-column:1/-1; padding:7px 12px; }
+      .level-pill { order:3; grid-column:1/-1; }
       .stats { font-size:12px; }
       .stats strong { font-size:16px; }
-      .card { padding:9px 7px; border-radius:22px; }
-      .hintline { min-height:26px; line-height:26px; font-size:13px; }
-      .board { grid-template-columns:repeat(4,1fr); gap:14px 2px; padding:12px 2px 8px; }
+      .card { padding:10px 8px; border-radius:22px; }
+      .board { grid-template-columns:repeat(4,1fr); gap:18px 2px; min-height:430px; }
       .tube { width:68px; height:205px; }
-      .rod { height:180px; }
+      .rod { width:11px; height:180px; }
       .nut { width:54px; height:33px; }
+      .nuts { width:56px; }
       .base { width:58px; }
-      .controls { grid-template-columns:repeat(2,1fr); gap:8px; }
-      .btn { min-height:48px; border-radius:16px; font-size:14px; }
-    }
-
-    @media (max-height:720px) {
-      .tube { height:190px; }
-      .rod { height:166px; }
-      .nut { width:52px; height:32px; }
-      .base { width:58px; height:18px; }
-      .board { gap:12px 2px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+      .controls { grid-template-columns:repeat(2,1fr); }
     }
   </style>
 </head>
 <body>
-  <main class="app" id="app">
+  <main class="app">
     <header class="topbar">
       <div class="brand">NUT <span>SORT</span></div>
       <div class="level-pill">Уровень <span id="level">1</span></div>
@@ -552,7 +518,6 @@
     const COLORS = ['#22c55e','#8b5cf6','#ef4444','#06b6d4','#facc15','#f97316','#ec4899','#3b82f6'];
     const CAPACITY = 5;
 
-    const appEl = document.getElementById('app');
     const boardEl = document.getElementById('board');
     const movesEl = document.getElementById('moves');
     const levelEl = document.getElementById('level');
@@ -570,29 +535,9 @@
     let locked = false;
     let introMode = false;
     let arrival = null;
-    let viewportTimer = null;
 
-    function setStableViewportHeight() {
-      clearTimeout(viewportTimer);
-      viewportTimer = setTimeout(() => {
-        document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
-      }, 80);
-    }
-
-    window.addEventListener('resize', setStableViewportHeight, { passive:true });
-    window.addEventListener('orientationchange', setStableViewportHeight, { passive:true });
-    setStableViewportHeight();
-
-    function preserveViewport(callback) {
-      const active = document.activeElement;
-      callback();
-      if (active && active instanceof HTMLElement) active.blur();
-      window.scrollTo(0, 0);
-      appEl.scrollTop = 0;
-    }
-
-    function cloneState(state) { return state.map(t => [...t]); }
-    function randomInt(max) { return Math.floor(Math.random() * max); }
+    const cloneState = state => state.map(t => [...t]);
+    const randomInt = max => Math.floor(Math.random() * max);
 
     function shuffle(array) {
       const a = [...array];
@@ -619,28 +564,26 @@
         for (let i = 0; i < colorCount; i++) candidate.push(mixed.slice(i * CAPACITY, (i + 1) * CAPACITY));
         for (let i = 0; i < emptyCount; i++) candidate.push([]);
         attempts++;
-      } while ((isSolved(candidate) || candidate.some(t => t.length && t.every(v => v === t[0]))) && attempts < 200);
+      } while ((isSolved(candidate) || candidate.some(t => t.length && t.every(v => v === t[0]))) && attempts < 220);
 
       return candidate;
     }
 
     function startLevel(newLevel = level) {
-      preserveViewport(() => {
-        level = newLevel;
-        localStorage.setItem('nutSortLevel', String(level));
-        tubes = generateLevel(level);
-        initialTubes = cloneState(tubes);
-        history = [];
-        selected = null;
-        moves = 0;
-        locked = false;
-        arrival = null;
-        introMode = true;
-        winModal.classList.remove('show');
-        setHint('Собери гайки одного цвета на каждом стержне');
-        render();
-      });
-      setTimeout(() => introMode = false, 680);
+      level = newLevel;
+      localStorage.setItem('nutSortLevel', String(level));
+      tubes = generateLevel(level);
+      initialTubes = cloneState(tubes);
+      history = [];
+      selected = null;
+      moves = 0;
+      locked = false;
+      arrival = null;
+      introMode = true;
+      winModal.classList.remove('show');
+      setHint('Собери гайки одного цвета на каждом стержне');
+      render();
+      setTimeout(() => { introMode = false; }, 900);
     }
 
     function render() {
@@ -652,13 +595,11 @@
       tubes.forEach((tube, index) => {
         const button = document.createElement('button');
         button.className = 'tube';
-        button.type = 'button';
-        button.style.setProperty('--tube-i', index);
         button.setAttribute('aria-label', `Стержень ${index + 1}`);
         if (selected === index) button.classList.add('selected');
         if (introMode) {
           button.classList.add('tube-enter');
-          button.style.animationDelay = `${index * 34}ms`;
+          button.style.animationDelay = `${index * 45}ms`;
         }
         if (tube.length === CAPACITY && tube.every(v => v === tube[0])) button.classList.add('complete');
 
@@ -679,22 +620,19 @@
           if (arrival && arrival.tube === index && nutIndex >= arrival.start && nutIndex < arrival.start + arrival.count) nut.classList.add('landing-ghost');
           if (introMode) {
             nut.classList.add('nut-enter');
-            nut.style.animationDelay = `${90 + index * 28 + nutIndex * 32}ms`;
+            nut.style.animationDelay = `${140 + index * 34 + nutIndex * 44}ms`;
           }
           nut.style.setProperty('--c', COLORS[colorIndex]);
           nuts.appendChild(nut);
         });
 
         button.append(rod, base, nuts);
-        button.addEventListener('click', event => {
-          event.preventDefault();
-          handleTube(index);
-        });
+        button.addEventListener('click', () => handleTube(index));
         boardEl.appendChild(button);
       });
     }
 
-    function topColor(tube) { return tube[tube.length - 1]; }
+    const topColor = tube => tube[tube.length - 1];
 
     function getTopGroupSize(tube) {
       if (tube.length === 0) return 0;
@@ -715,9 +653,7 @@
       return Math.min(sameColorGroup, freeSpace);
     }
 
-    function canMove(from, to) {
-      return getMoveCount(from, to) > 0;
-    }
+    const canMove = (from, to) => getMoveCount(from, to) > 0;
 
     function formatNutCount(count) {
       if (count === 1) return '1 гайка';
@@ -730,38 +666,32 @@
 
       if (selected === null) {
         if (tubes[index].length === 0) return showToast('Здесь пока нет гаек');
-        preserveViewport(() => {
-          selected = index;
-          const groupCount = getTopGroupSize(tubes[index]);
-          setHint(groupCount > 1
-            ? `Выбрана группа: ${formatNutCount(groupCount)} одного цвета`
-            : 'Теперь выбери стержень, куда перенести гайку');
-          render();
-        });
+        selected = index;
+        const groupCount = getTopGroupSize(tubes[index]);
+        setHint(groupCount > 1
+          ? `Выбрана группа: ${formatNutCount(groupCount)} одного цвета`
+          : 'Теперь выбери стержень, куда перенести гайку');
+        render();
         pulseTube(index);
         return;
       }
 
       if (selected === index) {
-        preserveViewport(() => {
-          selected = null;
-          setHint('Выбор отменён');
-          render();
-        });
+        selected = null;
+        setHint('Выбор отменён');
+        render();
         return;
       }
 
       const from = selected;
       const moveCount = getMoveCount(from, index);
       if (!moveCount) {
-        preserveViewport(() => {
-          selected = null;
-          setHint('Такой ход нельзя сделать');
-          render();
-        });
+        selected = null;
+        setHint('Такой ход нельзя сделать');
+        render();
         const target = boardEl.children[index];
         target?.classList.add('invalid');
-        setTimeout(() => target?.classList.remove('invalid'), 300);
+        setTimeout(() => target?.classList.remove('invalid'), 420);
         return;
       }
 
@@ -769,27 +699,23 @@
       const fromRects = fromEls.map(el => el.getBoundingClientRect());
       const movingNuts = tubes[from].slice(tubes[from].length - moveCount);
 
-      preserveViewport(() => {
-        history.push({ state: cloneState(tubes), moves });
-        tubes[from].splice(tubes[from].length - moveCount, moveCount);
-        tubes[index].push(...movingNuts);
-        moves++;
-        selected = null;
-        locked = true;
-        arrival = { tube:index, start:tubes[index].length - moveCount, count:moveCount };
-        setHint(moveCount > 1 ? `Перенесено сразу: ${formatNutCount(moveCount)}` : 'Хороший ход!');
-        render();
-      });
+      history.push({ state: cloneState(tubes), moves });
+      tubes[from].splice(tubes[from].length - moveCount, moveCount);
+      tubes[index].push(...movingNuts);
+      moves++;
+      selected = null;
+      locked = true;
+      arrival = { tube:index, start:tubes[index].length - moveCount, count:moveCount };
+      setHint(moveCount > 1 ? `Перенесено сразу: ${formatNutCount(moveCount)}` : 'Хороший ход!');
+      render();
 
       const toEls = getNutElements(index).slice(-moveCount);
       const toRects = toEls.map(el => el.getBoundingClientRect());
       await animateFlyingNuts(movingNuts, fromRects, toRects);
 
-      preserveViewport(() => {
-        arrival = null;
-        locked = false;
-        render();
-      });
+      arrival = null;
+      locked = false;
+      render();
 
       if (isSolved(tubes)) triggerWin();
     }
@@ -815,15 +741,27 @@
 
         const dx = to.left - from.left;
         const dy = to.top - from.top;
-        const lift = Math.min(130, 64 + Math.abs(dx) * .28 + i * 7);
-        const spin = (i % 2 === 0 ? 14 : -14) + i * 4;
-        const duration = 500 + i * 58;
-        const delay = i * 38;
+        const lift = Math.min(165, 82 + Math.abs(dx) * .36 + i * 8);
+        const spin = (i % 2 === 0 ? 14 : -14) + i * 3;
+        const duration = 760 + i * 90;
+        const delay = i * 60;
 
         const animation = clone.animate([
-          { transform:'translate3d(0,0,0) scale(1) rotateX(0deg) rotateZ(0deg)', offset:0, easing:'cubic-bezier(.2,.9,.2,1)' },
-          { transform:`translate3d(${dx * .46}px, ${dy * .36 - lift}px, 0) scale(1.13) rotateX(34deg) rotateZ(${spin}deg)`, offset:.52, easing:'cubic-bezier(.2,.9,.2,1)' },
-          { transform:`translate3d(${dx}px, ${dy}px, 0) scale(1) rotateX(0deg) rotateZ(0deg)`, offset:1, easing:'cubic-bezier(.16,.9,.2,1)' }
+          {
+            transform:'translate3d(0,0,0) scale(1) rotateZ(0deg)',
+            offset:0,
+            easing:'cubic-bezier(.22,.84,.18,1)'
+          },
+          {
+            transform:`translate3d(${dx * .46}px, ${dy * .32 - lift}px, 0) scale(1.12) rotateZ(${spin}deg)`,
+            offset:.52,
+            easing:'cubic-bezier(.22,.84,.18,1)'
+          },
+          {
+            transform:`translate3d(${dx}px, ${dy}px, 0) scale(1) rotateZ(0deg)`,
+            offset:1,
+            easing:'cubic-bezier(.18,.9,.2,1)'
+          }
         ], { duration, delay, fill:'forwards' });
 
         return animation.finished.then(() => clone.remove()).catch(() => clone.remove());
@@ -835,10 +773,10 @@
     function pulseTube(index) {
       const tube = boardEl.children[index];
       tube?.animate([
-        { filter:'drop-shadow(0 18px 22px rgba(250,204,21,.24)) brightness(1)' },
-        { filter:'drop-shadow(0 20px 28px rgba(250,204,21,.42)) brightness(1.08)' },
-        { filter:'drop-shadow(0 18px 22px rgba(250,204,21,.30)) brightness(1)' }
-      ], { duration:340, easing:'cubic-bezier(.2,.9,.2,1)' });
+        { transform:'scale(1.015)', filter:'brightness(1)' },
+        { transform:'scale(1.035)', filter:'brightness(1.06)' },
+        { transform:'scale(1.015)', filter:'brightness(1)' }
+      ], { duration:520, easing:'cubic-bezier(.2,.9,.2,1)' });
     }
 
     function isSolved(state) {
@@ -848,38 +786,34 @@
     function triggerWin() {
       locked = true;
       createConfetti();
-      setTimeout(() => winModal.classList.add('show'), 430);
+      setTimeout(() => winModal.classList.add('show'), 520);
     }
 
     function undo() {
       if (locked) return;
       const previous = history.pop();
       if (!previous) return;
-      preserveViewport(() => {
-        tubes = cloneState(previous.state);
-        moves = previous.moves;
-        selected = null;
-        arrival = null;
-        locked = false;
-        setHint('Последний ход отменён');
-        render();
-      });
+      tubes = cloneState(previous.state);
+      moves = previous.moves;
+      selected = null;
+      arrival = null;
+      locked = false;
+      setHint('Последний ход отменён');
+      render();
     }
 
     function restart() {
-      preserveViewport(() => {
-        tubes = cloneState(initialTubes);
-        history = [];
-        selected = null;
-        arrival = null;
-        moves = 0;
-        locked = false;
-        introMode = true;
-        winModal.classList.remove('show');
-        setHint('Уровень начат заново');
-        render();
-      });
-      setTimeout(() => introMode = false, 680);
+      tubes = cloneState(initialTubes);
+      history = [];
+      selected = null;
+      arrival = null;
+      moves = 0;
+      locked = false;
+      introMode = true;
+      winModal.classList.remove('show');
+      setHint('Уровень начат заново');
+      render();
+      setTimeout(() => { introMode = false; }, 900);
     }
 
     function getPossibleMoves() {
@@ -901,17 +835,15 @@
       if (locked) return;
       const move = getPossibleMoves()[0];
       if (!move) return showToast('Доступных ходов нет — попробуй отменить ход');
-      preserveViewport(() => {
-        selected = move.from;
-        setHint(`Подсказка: перенеси ${formatNutCount(move.count)} со стержня ${move.from + 1} на ${move.to + 1}`);
-        render();
-      });
+      selected = move.from;
+      setHint(`Подсказка: перенеси ${formatNutCount(move.count)} со стержня ${move.from + 1} на ${move.to + 1}`);
+      render();
       const target = boardEl.children[move.to];
       target?.animate([
-        { filter:'brightness(1)' },
-        { filter:'brightness(1.18) drop-shadow(0 18px 22px rgba(56,189,248,.30))' },
-        { filter:'brightness(1)' }
-      ], { duration:650, iterations:2, easing:'cubic-bezier(.2,.9,.2,1)' });
+        { transform:'scale(1)', filter:'brightness(1)' },
+        { transform:'scale(1.045)', filter:'brightness(1.08)' },
+        { transform:'scale(1)', filter:'brightness(1)' }
+      ], { duration:860, iterations:2, easing:'cubic-bezier(.2,.9,.2,1)' });
     }
 
     function setHint(message) {
@@ -925,7 +857,7 @@
       toastEl.textContent = message;
       toastEl.classList.add('show');
       clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toastEl.classList.remove('show'), 1800);
+      showToast.timer = setTimeout(() => toastEl.classList.remove('show'), 1900);
     }
 
     function createConfetti() {
@@ -936,22 +868,19 @@
         piece.style.left = `${Math.random() * 100}%`;
         piece.style.setProperty('--confetti', colors[i % colors.length]);
         piece.style.setProperty('--drift', `${(Math.random() * 2 - 1) * 120}px`);
-        piece.style.setProperty('--fall', `${1.25 + Math.random() * 1.35}s`);
-        piece.style.animationDelay = `${Math.random() * .25}s`;
+        piece.style.setProperty('--fall', `${1.4 + Math.random() * 1.4}s`);
+        piece.style.animationDelay = `${Math.random() * .28}s`;
         document.body.appendChild(piece);
-        setTimeout(() => piece.remove(), 3000);
+        setTimeout(() => piece.remove(), 3200);
       }
     }
 
-    document.getElementById('undoBtn').addEventListener('click', event => { event.preventDefault(); undo(); });
-    document.getElementById('hintBtn').addEventListener('click', event => { event.preventDefault(); showHint(); });
-    document.getElementById('restartBtn').addEventListener('click', event => { event.preventDefault(); restart(); });
-    document.getElementById('newBtn').addEventListener('click', event => { event.preventDefault(); startLevel(level); });
-    document.getElementById('replayBtn').addEventListener('click', event => { event.preventDefault(); restart(); });
-    document.getElementById('nextBtn').addEventListener('click', event => { event.preventDefault(); startLevel(level + 1); });
-
-    document.addEventListener('gesturestart', event => event.preventDefault());
-    document.addEventListener('touchmove', event => event.preventDefault(), { passive:false });
+    document.getElementById('undoBtn').addEventListener('click', undo);
+    document.getElementById('hintBtn').addEventListener('click', showHint);
+    document.getElementById('restartBtn').addEventListener('click', restart);
+    document.getElementById('newBtn').addEventListener('click', () => startLevel(level));
+    document.getElementById('replayBtn').addEventListener('click', restart);
+    document.getElementById('nextBtn').addEventListener('click', () => startLevel(level + 1));
 
     startLevel(level);
   </script>
