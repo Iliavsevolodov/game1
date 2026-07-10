@@ -1,1 +1,1120 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0f172a"><title>Nut Sort</title><style>:root{--bg:#0f172a;--bg2:#1e293b;--line:rgba(255,255,255,.17);--text:#f8fafc;--muted:#cbd5e1;--yellow:#facc15;--green:#4ade80;--app-h:100svh}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none;touch-action:manipulation}body{position:fixed;inset:0;user-select:none}button{font:inherit;appearance:none;-webkit-appearance:none}.app{height:var(--app-h);padding:max(14px,env(safe-area-inset-top)) 12px max(14px,env(safe-area-inset-bottom));display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;overflow:hidden;background:radial-gradient(circle at 18% 0%,rgba(250,204,21,.16),transparent 28%),radial-gradient(circle at 82% 14%,rgba(56,189,248,.15),transparent 30%),linear-gradient(180deg,var(--bg),var(--bg2));position:relative}.topbar,.card,.controls{width:100%;max-width:980px;margin:0 auto}.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}.brand{font-size:clamp(22px,5vw,34px);font-weight:1000;letter-spacing:-.045em}.brand span{color:var(--yellow)}.level-pill{justify-self:center;padding:9px 14px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.075));border:1px solid var(--line);font-weight:900;white-space:nowrap;box-shadow:0 12px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.2)}.stats{justify-self:end;text-align:right;color:var(--muted);font-weight:800;font-size:13px}.stats strong{color:var(--text);font-size:18px}.card{height:100%;min-height:0;padding:10px 8px;border-radius:26px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.055));box-shadow:0 22px 60px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.18);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;position:relative}.hintline{text-align:center;color:var(--muted);font-weight:850;min-height:28px;line-height:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.board{--cols:4;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:16px 6px;align-items:end;justify-items:center;width:100%;height:100%;min-height:0;padding:12px 0 8px;overflow:hidden;position:relative}.tube{position:relative;width:100%;max-width:72px;height:100%;min-height:160px;max-height:210px;border:0;background:transparent;padding:0;cursor:pointer;display:flex;justify-content:flex-end;align-items:center;outline:none;transition:filter .28s ease,transform .28s ease}.tube.selected{filter:drop-shadow(0 14px 20px rgba(250,204,21,.28));transform:scale(1.018)}.tube.invalid{animation:shake .36s ease}.tube.done:after{content:"✓";position:absolute;top:-4px;right:0;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#86efac,#22c55e);color:#052e16;font-weight:1000;z-index:8}.rod{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);width:11px;height:calc(100% - 20px);max-height:180px;border-radius:999px;background:linear-gradient(90deg,#707070 0%,#f8fafc 18%,#d4d4d8 42%,#fff 52%,#8b8b8b 100%);box-shadow:inset -3px 0 3px rgba(0,0,0,.28),inset 3px 0 3px rgba(255,255,255,.38),0 10px 18px rgba(0,0,0,.3);z-index:1}.rod:before{content:"";position:absolute;inset:0;border-radius:inherit;background:repeating-linear-gradient(180deg,transparent 0 4px,rgba(0,0,0,.13) 4px 6px)}.rod:after{content:"";position:absolute;left:50%;top:-4px;transform:translateX(-50%);width:19px;height:9px;border-radius:50%;background:radial-gradient(ellipse at 42% 28%,#fff 0 20%,#d4d4d8 42%,#71717a 100%);box-shadow:0 3px 5px rgba(0,0,0,.34)}.base{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);width:90%;max-width:64px;height:19px;border-radius:50% 50% 18px 18px;background:radial-gradient(ellipse at 42% 20%,#fafafa 0 12%,#d6d3d1 42%,#71717a 100%);box-shadow:0 9px 16px rgba(0,0,0,.36),inset 0 3px 4px rgba(255,255,255,.62),inset 0 -5px 6px rgba(0,0,0,.22);z-index:2}.nuts{position:absolute;left:50%;bottom:21px;transform:translateX(-50%);width:84%;max-width:58px;display:flex;flex-direction:column-reverse;align-items:center;z-index:3;pointer-events:none}.nut{width:100%;height:34px;margin-top:-2px;position:relative;clip-path:polygon(15% 7%,85% 7%,100% 50%,85% 93%,15% 93%,0 50%);background:radial-gradient(ellipse at 28% 16%,rgba(255,255,255,.58) 0 10%,transparent 30%),linear-gradient(90deg,rgba(0,0,0,.35) 0%,rgba(255,255,255,.22) 16%,rgba(255,255,255,.34) 38%,rgba(0,0,0,.10) 64%,rgba(0,0,0,.40) 100%),linear-gradient(180deg,rgba(255,255,255,.20),transparent 38%,rgba(0,0,0,.24)),var(--c);box-shadow:inset 0 7px 8px rgba(255,255,255,.28),inset 0 -8px 9px rgba(0,0,0,.28),0 5px 8px rgba(0,0,0,.34);transition:transform .36s cubic-bezier(.2,.9,.2,1),filter .36s ease,opacity .2s ease}.nut:after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 45% 42%,#111827 0 30%,#6b7280 31% 45%,#f8fafc 48% 60%,rgba(255,255,255,.15) 66%);box-shadow:inset 0 3px 5px rgba(0,0,0,.68),0 1px 2px rgba(255,255,255,.42)}.nut.move{filter:brightness(1.08) saturate(1.08)}.selected .nut.move{transform:translateY(-7px) rotateZ(-3deg) scale(1.02)}.ghost{opacity:0}.fly{position:fixed;margin:0;z-index:999;pointer-events:none;will-change:transform}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.btn{border:1px solid var(--line);border-radius:18px;min-height:52px;padding:10px 12px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.07));color:var(--text);font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.18)}.btn:active{transform:scale(.99)}.btn.primary{background:linear-gradient(180deg,#fde047,#eab308);color:#201a00;border-color:transparent}.btn:disabled{opacity:.42}.modal{position:fixed;inset:0;display:none;place-items:center;padding:20px;background:rgba(2,6,23,.68);backdrop-filter:blur(10px);z-index:20}.modal.show{display:grid}.modal-box{width:min(430px,100%);padding:28px;border-radius:30px;text-align:center;background:linear-gradient(180deg,#fff,#e5e7eb);color:#111827;box-shadow:0 34px 90px rgba(0,0,0,.48)}.modal-box h2{margin:0 0 8px}.modal-box p{color:#475569}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,120px);background:#fff;color:#111827;padding:12px 16px;border-radius:999px;font-weight:900;transition:transform .3s ease;z-index:30}.toast.show{transform:translate(-50%,0)}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}@media(min-width:700px){.controls{grid-template-columns:repeat(4,minmax(0,1fr))}}</style></head><body><main class="app"><header class="topbar"><div class="brand">NUT <span>SORT</span></div><div class="level-pill">Уровень <span id="level">1</span></div><div class="stats">Ходы<br><strong id="moves">0</strong></div></header><section class="card"><div class="hintline" id="hintline">Собери гайки одного цвета на каждом стержне</div><div class="board" id="board"></div></section><section class="controls"><button class="btn" id="undoBtn">↶ Отменить</button><button class="btn" id="hintBtn">💡 Подсказка</button><button class="btn" id="restartBtn">⟳ Заново</button><button class="btn primary" id="newBtn">Новый уровень</button></section></main><div class="modal" id="winModal"><div class="modal-box"><div style="font-size:58px">🏆</div><h2>Уровень пройден!</h2><p>Переходим дальше?</p><div class="modal-actions"><button class="btn" id="replayBtn" style="color:#111827;background:#fff">Повторить</button><button class="btn primary" id="nextBtn">Дальше →</button></div></div></div><div class="toast" id="toast"></div><script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script><script>const COLORS=['#22c55e','#8b5cf6','#ef4444','#06b6d4','#facc15','#f97316','#ec4899','#3b82f6'],CAPACITY=5;const boardEl=document.getElementById('board'),movesEl=document.getElementById('moves'),levelEl=document.getElementById('level'),hintline=document.getElementById('hintline'),undoBtn=document.getElementById('undoBtn'),winModal=document.getElementById('winModal'),toastEl=document.getElementById('toast');let level=Number(localStorage.getItem('nutSortLevel')||1),tubes=[],initialTubes=[],selected=null,history=[],moves=0,locked=false,arrival=null;const clone=s=>s.map(t=>[...t]),rnd=m=>Math.floor(Math.random()*m),topColor=t=>t[t.length-1];function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}function solved(state){return state.every(t=>t.length===0||(t.length===CAPACITY&&t.every(v=>v===t[0])))}function gen(lv){const colors=Math.min(4+Math.floor((lv-1)/3),7),pieces=[];for(let c=0;c<colors;c++)for(let i=0;i<CAPACITY;i++)pieces.push(c);let candidate,tries=0;do{const mixed=shuffle(pieces);candidate=[];for(let i=0;i<colors;i++)candidate.push(mixed.slice(i*CAPACITY,(i+1)*CAPACITY));candidate.push([],[]);tries++}while((solved(candidate)||candidate.some(t=>t.length&&t.every(v=>v===t[0])))&&tries<220);return candidate}function groupSize(t){if(!t.length)return 0;const c=topColor(t);let n=0;for(let i=t.length-1;i>=0&&t[i]===c;i--)n++;return n}function moveCount(from,to){if(from===to||!tubes[from].length||tubes[to].length>=CAPACITY)return 0;if(tubes[to].length&&topColor(tubes[from])!==topColor(tubes[to]))return 0;return Math.min(groupSize(tubes[from]),CAPACITY-tubes[to].length)}function word(n){if(n===1)return'1 гайка';if(n>=2&&n<=4)return`${n} гайки`;return`${n} гаек`}function start(lv=level){level=lv;localStorage.setItem('nutSortLevel',String(level));tubes=gen(level);initialTubes=clone(tubes);history=[];selected=null;moves=0;locked=false;arrival=null;winModal.classList.remove('show');setHint('Собери гайки одного цвета на каждом стержне');render()}function render(){levelEl.textContent=level;movesEl.textContent=moves;undoBtn.disabled=history.length===0||locked;boardEl.style.setProperty('--cols',String(Math.ceil(tubes.length/2)));boardEl.innerHTML='';tubes.forEach((tube,i)=>{const b=document.createElement('button');b.className='tube';if(selected===i)b.classList.add('selected');if(tube.length===CAPACITY&&tube.every(v=>v===tube[0]))b.classList.add('done');const rod=document.createElement('div');rod.className='rod';const base=document.createElement('div');base.className='base';const nuts=document.createElement('div');nuts.className='nuts';const g=selected===i?groupSize(tube):0;tube.forEach((c,ni)=>{const n=document.createElement('div');n.className='nut';if(g&&ni>=tube.length-g)n.classList.add('move');if(arrival&&arrival.tube===i&&ni>=arrival.start&&ni<arrival.start+arrival.count)n.classList.add('ghost');n.style.setProperty('--c',COLORS[c]);nuts.appendChild(n)});b.append(rod,base,nuts);b.addEventListener('click',()=>tap(i));boardEl.appendChild(b)})}async function tap(i){if(locked)return;if(selected===null){if(!tubes[i].length)return toast('Здесь пока нет гаек');selected=i;const g=groupSize(tubes[i]);setHint(g>1?`Выбрана группа: ${word(g)}`:'Выбери стержень для переноса');render();pulse(i);return}if(selected===i){selected=null;setHint('Выбор отменён');render();return}const from=selected,count=moveCount(from,i);if(!count){selected=null;setHint('Такой ход нельзя сделать');render();const t=boardEl.children[i];t?.classList.add('invalid');setTimeout(()=>t?.classList.remove('invalid'),400);return}const fromEls=nutEls(from).slice(-count),fromRects=fromEls.map(e=>e.getBoundingClientRect()),moving=tubes[from].slice(tubes[from].length-count);history.push({state:clone(tubes),moves});tubes[from].splice(tubes[from].length-count,count);tubes[i].push(...moving);moves++;selected=null;locked=true;arrival={tube:i,start:tubes[i].length-count,count};setHint(count>1?`Перенесено: ${word(count)}`:'Хороший ход!');render();const toRects=nutEls(i).slice(-count).map(e=>e.getBoundingClientRect());await fly(moving,fromRects,toRects);arrival=null;locked=false;render();if(solved(tubes))win()}function nutEls(i){return Array.from(boardEl.children[i]?.querySelectorAll('.nut')||[])}function fly(colors,fromRects,toRects){return Promise.all(colors.map((c,i)=>new Promise(resolve=>{const from=fromRects[i],to=toRects[i];if(!from||!to)return resolve();const el=document.createElement('div');el.className='nut fly';el.style.setProperty('--c',COLORS[c]);el.style.left=`${from.left}px`;el.style.top=`${from.top}px`;el.style.width=`${from.width}px`;el.style.height=`${from.height}px`;document.body.appendChild(el);const dx=to.left-from.left,dy=to.top-from.top,lift=Math.min(150,76+Math.abs(dx)*.32+i*7);if(window.gsap){gsap.timeline({delay:i*.05,onComplete:()=>{el.remove();resolve()}}).to(el,{duration:.42,x:dx*.48,y:dy*.34-lift,scale:1.1,rotation:i%2? -14:14,ease:'power2.out'}).to(el,{duration:.46,x:dx,y:dy,scale:1,rotation:0,ease:'power3.inOut'})}else{const a=el.animate([{transform:'translate3d(0,0,0)'},{transform:`translate3d(${dx*.48}px,${dy*.34-lift}px,0) scale(1.1)`},{transform:`translate3d(${dx}px,${dy}px,0)`}],{duration:850+i*60,fill:'forwards',easing:'cubic-bezier(.2,.9,.2,1)'});a.finished.then(()=>{el.remove();resolve()}).catch(()=>{el.remove();resolve()})}})))}function pulse(i){const el=boardEl.children[i];if(!el)return;if(window.gsap)gsap.fromTo(el,{scale:1.018},{scale:1.04,duration:.2,yoyo:true,repeat:1,ease:'sine.inOut'});else el.animate([{transform:'scale(1.018)'},{transform:'scale(1.04)'},{transform:'scale(1.018)'}],{duration:450})}function win(){locked=true;setTimeout(()=>winModal.classList.add('show'),420)}function undo(){if(locked)return;const p=history.pop();if(!p)return;tubes=clone(p.state);moves=p.moves;selected=null;arrival=null;setHint('Последний ход отменён');render()}function restart(){tubes=clone(initialTubes);history=[];selected=null;arrival=null;moves=0;locked=false;winModal.classList.remove('show');setHint('Уровень начат заново');render()}function possible(){const r=[];for(let f=0;f<tubes.length;f++)for(let t=0;t<tubes.length;t++){const count=moveCount(f,t);if(count)r.push({from:f,to:t,count})}return r}function hint(){if(locked)return;const m=possible()[0];if(!m)return toast('Доступных ходов нет');selected=m.from;setHint(`Перенеси ${word(m.count)} со стержня ${m.from+1} на ${m.to+1}`);render();pulse(m.to)}function setHint(m){hintline.textContent=m}function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>toastEl.classList.remove('show'),1800)}document.getElementById('undoBtn').onclick=undo;document.getElementById('hintBtn').onclick=hint;document.getElementById('restartBtn').onclick=restart;document.getElementById('newBtn').onclick=()=>start(level);document.getElementById('replayBtn').onclick=restart;document.getElementById('nextBtn').onclick=()=>start(level+1);start(level);</script></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#091127" />
+  <title>Nut Sort</title>
+  <style>
+    :root {
+      --bg-1: #091127;
+      --bg-2: #13254d;
+      --bg-3: #1a1040;
+      --panel: rgba(255, 255, 255, 0.1);
+      --panel-border: rgba(255, 255, 255, 0.16);
+      --text: #f8fbff;
+      --muted: #c2d1ea;
+      --yellow: #ffd44d;
+      --yellow-deep: #f4b000;
+      --cyan: #51d7ff;
+      --pink: #ff5ec8;
+      --green: #5ff08e;
+      --shadow: 0 28px 60px rgba(0, 0, 0, 0.42);
+      --app-h: 100svh;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg-1);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+      user-select: none;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255, 212, 77, 0.2), transparent 28%),
+        radial-gradient(circle at 88% 8%, rgba(81, 215, 255, 0.16), transparent 25%),
+        radial-gradient(circle at 50% 100%, rgba(255, 94, 200, 0.14), transparent 30%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2) 58%, var(--bg-3));
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(180deg, transparent, #000 14%, #000 84%, transparent);
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    button {
+      font: inherit;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 0;
+    }
+
+    .app {
+      position: relative;
+      height: var(--app-h);
+      padding: max(14px, env(safe-area-inset-top)) 12px max(14px, env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .topbar,
+    .card,
+    .controls {
+      width: 100%;
+      max-width: 1020px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+      animation: fadeDown 0.45s cubic-bezier(.2,.9,.2,1) both;
+    }
+
+    .brand {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 1000;
+      letter-spacing: -0.05em;
+      text-shadow: 0 8px 24px rgba(0,0,0,.35);
+    }
+
+    .brand span {
+      color: var(--yellow);
+      text-shadow: 0 0 18px rgba(255,212,77,.28);
+    }
+
+    .level-pill,
+    .btn,
+    .card {
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .level-pill {
+      justify-self: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.19), rgba(255,255,255,.08));
+      border: 1px solid rgba(255,255,255,.2);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.28);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .stats {
+      justify-self: end;
+      text-align: right;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+      text-shadow: 0 2px 12px rgba(0,0,0,.28);
+    }
+
+    .stats strong {
+      display: inline-block;
+      margin-top: 2px;
+      color: var(--text);
+      font-size: 20px;
+    }
+
+    .card {
+      position: relative;
+      height: 100%;
+      min-height: 0;
+      padding: 10px 8px;
+      border-radius: 28px;
+      border: 1px solid var(--panel-border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.06)),
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.14), transparent 46%),
+        linear-gradient(180deg, rgba(26,35,73,.72), rgba(23,31,61,.82));
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(255,255,255,.05);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: auto -12% -36px;
+      height: 124px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0), rgba(0,0,0,.08)),
+        linear-gradient(90deg, rgba(121, 69, 34, 0.38), rgba(190, 106, 57, 0.26), rgba(121, 69, 34, 0.38)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 2px, transparent 2px 50px);
+      opacity: 0.95;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 20%, rgba(255,255,255,.08), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hintline {
+      position: relative;
+      z-index: 3;
+      min-height: 28px;
+      line-height: 28px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 900;
+      padding-inline: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .hintline.pop {
+      animation: hintPulse 0.32s cubic-bezier(.2,.9,.2,1);
+    }
+
+    .board-wrap {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .board {
+      --cols: 4;
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 18px 6px;
+      align-items: end;
+      justify-items: center;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      padding: 14px 0 10px;
+      overflow: hidden;
+      perspective: 1200px;
+      perspective-origin: 50% 40%;
+    }
+
+    .tube {
+      position: relative;
+      width: 100%;
+      max-width: 76px;
+      height: 100%;
+      min-height: 180px;
+      max-height: 234px;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      outline: none;
+      touch-action: manipulation;
+      transform-style: preserve-3d;
+      transition: transform .24s ease, filter .24s ease;
+    }
+
+    .tube::before {
+      content: "";
+      position: absolute;
+      inset: -6px 4px -4px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border: 1px solid transparent;
+      opacity: 0;
+      transition: opacity .24s ease, border-color .24s ease, box-shadow .24s ease;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .tube.selected {
+      transform: translateY(-2px) scale(1.02);
+      filter: drop-shadow(0 16px 20px rgba(255,212,77,.22));
+    }
+
+    .tube.selected::before {
+      opacity: 1;
+      border-color: rgba(255,212,77,.48);
+      box-shadow: 0 0 0 1px rgba(255,212,77,.04), 0 20px 36px rgba(255,212,77,.12);
+    }
+
+    .tube.invalid {
+      animation: shake .34s ease;
+    }
+
+    .tube.enter {
+      animation: tubeIn .5s cubic-bezier(.18,.9,.22,1.15) both;
+    }
+
+    .tube.done::after {
+      content: "✓";
+      position: absolute;
+      top: -6px;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #8af7b0, #25cd67);
+      color: #073318;
+      font-weight: 1000;
+      box-shadow: 0 8px 20px rgba(74,222,128,.42), inset 0 1px 0 rgba(255,255,255,.66);
+      z-index: 8;
+      animation: badgePop .52s cubic-bezier(.2,.9,.2,1);
+    }
+
+    .rod {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: 12px;
+      height: calc(100% - 26px);
+      max-height: 198px;
+      border-radius: 999px;
+      background:
+        linear-gradient(90deg, #676d79 0%, #ffffff 18%, #e1e5ee 34%, #fefefe 54%, #a3adbd 72%, #737c8b 100%);
+      box-shadow:
+        inset 2px 0 3px rgba(255,255,255,.46),
+        inset -4px 0 4px rgba(0,0,0,.28),
+        0 10px 20px rgba(0,0,0,.35);
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .rod::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(180deg, transparent 0 4px, rgba(0,0,0,.18) 4px 6px);
+      mix-blend-mode: multiply;
+      opacity: 0.6;
+    }
+
+    .rod::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 42% 28%, #ffffff 0 20%, #d5dbe6 42%, #707887 100%);
+      box-shadow: 0 3px 6px rgba(0,0,0,.34);
+    }
+
+    .base {
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      transform: translateX(-50%);
+      width: 92%;
+      max-width: 68px;
+      height: 20px;
+      border-radius: 50% 50% 18px 18px;
+      background: radial-gradient(ellipse at 42% 20%, #ffffff 0 14%, #d9dde6 44%, #7a8392 100%);
+      box-shadow:
+        0 12px 16px rgba(0,0,0,.35),
+        inset 0 2px 4px rgba(255,255,255,.62),
+        inset 0 -6px 8px rgba(0,0,0,.22);
+      z-index: 2;
+    }
+
+    .base::after {
+      content: "";
+      position: absolute;
+      inset: 4px 10px auto;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.4);
+      filter: blur(1px);
+    }
+
+    .nuts {
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      width: 84%;
+      max-width: 62px;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      z-index: 3;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.22));
+    }
+
+    .nut {
+      width: 100%;
+      height: 36px;
+      margin-top: -2px;
+      position: relative;
+      clip-path: polygon(14% 6%, 86% 6%, 100% 50%, 86% 94%, 14% 94%, 0 50%);
+      background:
+        radial-gradient(ellipse at 26% 16%, rgba(255,255,255,.72) 0 12%, transparent 30%),
+        linear-gradient(90deg, rgba(0,0,0,.34) 0%, rgba(255,255,255,.18) 18%, rgba(255,255,255,.28) 38%, rgba(0,0,0,.08) 60%, rgba(0,0,0,.32) 100%),
+        linear-gradient(180deg, rgba(255,255,255,.22), transparent 38%, rgba(0,0,0,.26)),
+        var(--c);
+      box-shadow:
+        inset 0 8px 8px rgba(255,255,255,.28),
+        inset 0 -8px 10px rgba(0,0,0,.26),
+        inset 7px 0 10px rgba(255,255,255,.12),
+        inset -7px 0 10px rgba(0,0,0,.18),
+        0 5px 8px rgba(0,0,0,.34);
+      transition: transform .28s cubic-bezier(.2,.9,.2,1), filter .28s ease, opacity .2s ease;
+      will-change: transform;
+      transform-style: preserve-3d;
+    }
+
+    .nut::before {
+      content: "";
+      position: absolute;
+      inset: 3px 5px;
+      clip-path: inherit;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.26), transparent 34%, rgba(0,0,0,.14)),
+        radial-gradient(ellipse at 50% 50%, transparent 0 27%, rgba(255,255,255,.18) 29% 35%, transparent 38%);
+      opacity: .92;
+    }
+
+    .nut::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 45% 42%, #0f172a 0 30%, #616d83 31% 45%, #f8fbff 48% 60%, rgba(255,255,255,.14) 66%);
+      box-shadow: inset 0 3px 5px rgba(0,0,0,.72), 0 1px 2px rgba(255,255,255,.42);
+    }
+
+    .nut.move-group {
+      filter: brightness(1.12) saturate(1.08);
+    }
+
+    .selected .nut.move-group {
+      transform: translateY(-8px) rotateZ(-4deg) scale(1.02);
+    }
+
+    .selected .nut.move-group:nth-last-child(2) {
+      transform: translateY(-6px) rotateZ(3deg) scale(1.015);
+    }
+
+    .selected .nut.move-group:nth-last-child(3) {
+      transform: translateY(-4px) rotateZ(-2deg) scale(1.01);
+    }
+
+    .ghost {
+      opacity: 0;
+    }
+
+    .fly {
+      position: fixed;
+      margin: 0;
+      z-index: 999;
+      pointer-events: none;
+      transform-origin: center center;
+      filter: drop-shadow(0 18px 18px rgba(0,0,0,.34));
+      will-change: transform, opacity;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      animation: fadeUp .5s cubic-bezier(.2,.9,.2,1) both;
+    }
+
+    .btn {
+      position: relative;
+      min-height: 54px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.07));
+      color: var(--text);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 14px 24px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.18);
+      overflow: hidden;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0 40%, rgba(255,255,255,.16) 50%, transparent 60% 100%);
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    .btn:active {
+      transform: scale(.985);
+    }
+
+    .btn.primary {
+      color: #2a1b00;
+      background: linear-gradient(180deg, #ffe067, #ffc534 62%, #f2a900);
+      border-color: rgba(255,255,255,.2);
+      box-shadow: 0 16px 28px rgba(255, 196, 52, .28), inset 0 1px 0 rgba(255,255,255,.6);
+    }
+
+    .btn:disabled {
+      opacity: .42;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3, 7, 18, 0.7);
+      backdrop-filter: blur(10px);
+      z-index: 20;
+    }
+
+    .modal.show {
+      display: grid;
+    }
+
+    .modal-box {
+      width: min(430px, 100%);
+      padding: 28px;
+      border-radius: 30px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,212,77,.22), transparent 36%),
+        linear-gradient(180deg, #ffffff, #e8edf5);
+      color: #111827;
+      box-shadow: 0 34px 90px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.75);
+      transform-origin: center center;
+    }
+
+    .modal-box h2 {
+      margin: 0 0 8px;
+      font-size: 34px;
+    }
+
+    .modal-box p {
+      margin: 0 0 18px;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      transform: translate(-50%, 120px);
+      background: rgba(255,255,255,.98);
+      color: #111827;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow: 0 16px 40px rgba(0,0,0,.32);
+      transition: transform .3s ease;
+      z-index: 40;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+    }
+
+    .confetti {
+      position: fixed;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      border-radius: 3px;
+      background: var(--confetti);
+      pointer-events: none;
+      z-index: 35;
+      animation: confettiFall var(--fall, 1.6s) linear forwards;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0) scale(1.02); }
+      25% { transform: translateX(-8px) scale(1.02); }
+      75% { transform: translateX(8px) scale(1.02); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes tubeIn {
+      from { opacity: 0; transform: translateY(20px) scale(.96); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes hintPulse {
+      0% { transform: scale(.985); opacity: .82; }
+      50% { transform: scale(1.018); opacity: 1; color: #fff; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes badgePop {
+      0% { opacity: 0; transform: scale(.2) rotate(-24deg); }
+      70% { opacity: 1; transform: scale(1.14) rotate(6deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
+    }
+
+    @keyframes confettiFall {
+      to {
+        transform: translate3d(var(--drift), 108vh, 0) rotate(720deg);
+        opacity: .15;
+      }
+    }
+
+    @media (min-width: 700px) {
+      .controls {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 420px) {
+      .app {
+        padding-inline: 10px;
+      }
+
+      .tube {
+        max-width: 68px;
+        min-height: 166px;
+        max-height: 206px;
+      }
+
+      .rod {
+        max-height: 176px;
+        width: 11px;
+      }
+
+      .nut {
+        height: 33px;
+      }
+
+      .base {
+        max-width: 60px;
+        height: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">NUT <span>SORT</span></div>
+      <div class="level-pill">Уровень <span id="level">1</span></div>
+      <div class="stats">Ходы<br><strong id="moves">0</strong></div>
+    </header>
+
+    <section class="card">
+      <div class="hintline" id="hintline">Собери гайки одного цвета на каждом стержне</div>
+      <div class="board-wrap">
+        <div class="board" id="board" aria-label="Игровое поле"></div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <button class="btn" id="undoBtn">↶ Отменить</button>
+      <button class="btn" id="hintBtn">💡 Подсказка</button>
+      <button class="btn" id="restartBtn">⟳ Заново</button>
+      <button class="btn primary" id="newBtn">Новый уровень</button>
+    </section>
+  </main>
+
+  <div class="modal" id="winModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div style="font-size:58px">🏆</div>
+      <h2>Уровень пройден!</h2>
+      <p>Отличная сортировка. Переходим дальше?</p>
+      <div class="modal-actions">
+        <button class="btn" id="replayBtn" style="color:#111827; background:#fff">Повторить</button>
+        <button class="btn primary" id="nextBtn">Дальше →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const COLORS = ['#31df74', '#9b69ff', '#ff605b', '#39d6ff', '#ffd44d', '#ff9b3d', '#ff5ec8', '#63a8ff'];
+    const CAPACITY = 5;
+
+    const boardEl = document.getElementById('board');
+    const movesEl = document.getElementById('moves');
+    const levelEl = document.getElementById('level');
+    const hintline = document.getElementById('hintline');
+    const undoBtn = document.getElementById('undoBtn');
+    const hintBtn = document.getElementById('hintBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const newBtn = document.getElementById('newBtn');
+    const winModal = document.getElementById('winModal');
+    const replayBtn = document.getElementById('replayBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const toastEl = document.getElementById('toast');
+
+    let level = Number(localStorage.getItem('nutSortLevel') || 1);
+    let tubes = [];
+    let initialTubes = [];
+    let selected = null;
+    let history = [];
+    let moves = 0;
+    let locked = false;
+    let introMode = false;
+    let arrival = null;
+
+    const cloneState = state => state.map(t => [...t]);
+    const randomInt = max => Math.floor(Math.random() * max);
+    const topColor = tube => tube[tube.length - 1];
+
+    function shuffle(array) {
+      const a = [...array];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = randomInt(i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function isSolved(state) {
+      return state.every(tube => tube.length === 0 || (tube.length === CAPACITY && tube.every(v => v === tube[0])));
+    }
+
+    function generateLevel(levelNumber) {
+      const colorCount = Math.min(4 + Math.floor((levelNumber - 1) / 3), 7);
+      const pieces = [];
+      for (let c = 0; c < colorCount; c++) {
+        for (let i = 0; i < CAPACITY; i++) pieces.push(c);
+      }
+
+      let candidate;
+      let attempts = 0;
+      do {
+        const mixed = shuffle(pieces);
+        candidate = [];
+        for (let i = 0; i < colorCount; i++) {
+          candidate.push(mixed.slice(i * CAPACITY, (i + 1) * CAPACITY));
+        }
+        candidate.push([], []);
+        attempts++;
+      } while ((isSolved(candidate) || candidate.some(t => t.length && t.every(v => v === t[0]))) && attempts < 240);
+
+      return candidate;
+    }
+
+    function getTopGroupSize(tube) {
+      if (!tube.length) return 0;
+      const color = topColor(tube);
+      let count = 0;
+      for (let i = tube.length - 1; i >= 0 && tube[i] === color; i--) count++;
+      return count;
+    }
+
+    function getMoveCount(from, to) {
+      if (from === to) return 0;
+      if (!tubes[from].length) return 0;
+      if (tubes[to].length >= CAPACITY) return 0;
+      if (tubes[to].length > 0 && topColor(tubes[from]) !== topColor(tubes[to])) return 0;
+
+      const group = getTopGroupSize(tubes[from]);
+      const freeSpace = CAPACITY - tubes[to].length;
+      return Math.min(group, freeSpace);
+    }
+
+    function nutWord(count) {
+      if (count === 1) return '1 гайка';
+      if (count >= 2 && count <= 4) return `${count} гайки`;
+      return `${count} гаек`;
+    }
+
+    function setHint(message) {
+      hintline.textContent = message;
+      hintline.classList.remove('pop');
+      void hintline.offsetWidth;
+      hintline.classList.add('pop');
+    }
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toastEl.classList.remove('show'), 1800);
+    }
+
+    function createConfetti() {
+      const colors = ['#ffd44d', '#31df74', '#39d6ff', '#9b69ff', '#ff605b', '#ff5ec8'];
+      for (let i = 0; i < 56; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.setProperty('--confetti', colors[i % colors.length]);
+        piece.style.setProperty('--drift', `${(Math.random() * 2 - 1) * 120}px`);
+        piece.style.setProperty('--fall', `${1.4 + Math.random() * 1.4}s`);
+        piece.style.animationDelay = `${Math.random() * .2}s`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 3200);
+      }
+    }
+
+    function render() {
+      levelEl.textContent = level;
+      movesEl.textContent = moves;
+      undoBtn.disabled = history.length === 0 || locked;
+      boardEl.style.setProperty('--cols', String(Math.ceil(tubes.length / 2)));
+      boardEl.innerHTML = '';
+
+      tubes.forEach((tube, index) => {
+        const button = document.createElement('button');
+        button.className = 'tube';
+        button.setAttribute('aria-label', `Стержень ${index + 1}`);
+        button.dataset.index = String(index);
+        if (selected === index) button.classList.add('selected');
+        if (introMode) {
+          button.classList.add('enter');
+          button.style.animationDelay = `${index * 42}ms`;
+        }
+        if (tube.length === CAPACITY && tube.every(v => v === tube[0])) {
+          button.classList.add('done');
+        }
+
+        const rod = document.createElement('div');
+        rod.className = 'rod';
+        const base = document.createElement('div');
+        base.className = 'base';
+        const nuts = document.createElement('div');
+        nuts.className = 'nuts';
+
+        const selectedGroup = selected === index ? getTopGroupSize(tube) : 0;
+
+        tube.forEach((colorIndex, nutIndex) => {
+          const nut = document.createElement('div');
+          nut.className = 'nut';
+          if (selectedGroup && nutIndex >= tube.length - selectedGroup) nut.classList.add('move-group');
+          if (arrival && arrival.tube === index && nutIndex >= arrival.start && nutIndex < arrival.start + arrival.count) nut.classList.add('ghost');
+          nut.style.setProperty('--c', COLORS[colorIndex]);
+          nuts.appendChild(nut);
+        });
+
+        button.append(rod, base, nuts);
+        button.addEventListener('click', () => handleTube(index));
+        boardEl.appendChild(button);
+      });
+    }
+
+    function getNutElements(tubeIndex) {
+      return Array.from(boardEl.children[tubeIndex]?.querySelectorAll('.nut') || []);
+    }
+
+    function getTubeElement(tubeIndex) {
+      return boardEl.children[tubeIndex];
+    }
+
+    function fallbackFly(colors, fromRects, toRects, meta) {
+      const fromTube = getTubeElement(meta.fromIndex);
+      const toTube = getTubeElement(meta.toIndex);
+      const fromTubeRect = fromTube?.getBoundingClientRect();
+      const toTubeRect = toTube?.getBoundingClientRect();
+
+      return Promise.all(colors.map((colorIndex, i) => {
+        const from = fromRects[i];
+        const to = toRects[i];
+        if (!from || !to || !fromTubeRect || !toTubeRect) return Promise.resolve();
+
+        const clone = document.createElement('div');
+        clone.className = 'nut fly';
+        clone.style.setProperty('--c', COLORS[colorIndex]);
+        clone.style.left = `${from.left}px`;
+        clone.style.top = `${from.top}px`;
+        clone.style.width = `${from.width}px`;
+        clone.style.height = `${from.height}px`;
+        document.body.appendChild(clone);
+
+        const sourceTopY = fromTubeRect.top + 8 - from.top;
+        const targetTopY = toTubeRect.top + 8 - from.top;
+        const dx = to.left - from.left;
+        const dy = to.top - from.top;
+        const direction = dx >= 0 ? 1 : -1;
+        const rotationA = direction * (420 + i * 20);
+        const rotationB = direction * (900 + i * 35);
+        const rotationC = direction * (1260 + i * 45);
+
+        const animation = clone.animate([
+          { transform: 'translate3d(0,0,0) scale(1) rotateZ(0deg)', offset: 0 },
+          { transform: `translate3d(0px, ${sourceTopY}px, 0) scale(1.08) rotateZ(${rotationA}deg)`, offset: 0.22, easing: 'cubic-bezier(.2,.9,.2,1)' },
+          { transform: `translate3d(${dx}px, ${targetTopY}px, 0) scale(1.1) rotateZ(${rotationB}deg)`, offset: 0.68, easing: 'linear' },
+          { transform: `translate3d(${dx}px, ${targetTopY + (dy - targetTopY) * 0.5}px, 0) scale(1.04) rotateZ(${rotationC}deg)`, offset: 0.84, easing: 'cubic-bezier(.2,.9,.2,1)' },
+          { transform: `translate3d(${dx}px, ${dy}px, 0) scale(1) rotateZ(${rotationC + direction * 180}deg)`, offset: 1, easing: 'cubic-bezier(.2,.9,.2,1)' }
+        ], {
+          duration: 820 + i * 70,
+          delay: i * 50,
+          fill: 'forwards'
+        });
+
+        return animation.finished.then(() => clone.remove()).catch(() => clone.remove());
+      }));
+    }
+
+    function pulseTube(index) {
+      const tube = getTubeElement(index);
+      if (!tube) return;
+      tube.animate([
+        { transform: 'translateY(-2px) scale(1.02)', filter: 'brightness(1)' },
+        { transform: 'translateY(-4px) scale(1.04)', filter: 'brightness(1.08)' },
+        { transform: 'translateY(-2px) scale(1.02)', filter: 'brightness(1)' }
+      ], {
+        duration: 460,
+        easing: 'cubic-bezier(.2,.9,.2,1)'
+      });
+    }
+
+    function showWin() {
+      locked = true;
+      createConfetti();
+      winModal.classList.add('show');
+      const box = winModal.querySelector('.modal-box');
+      box?.animate([
+        { transform: 'translateY(18px) scale(.92)', opacity: .2 },
+        { transform: 'translateY(0) scale(1.03)', opacity: 1, offset: .7 },
+        { transform: 'translateY(0) scale(1)', opacity: 1 }
+      ], {
+        duration: 520,
+        easing: 'cubic-bezier(.18,.9,.2,1.14)'
+      });
+    }
+
+    async function animateTransfer(colors, fromRects, toRects, meta) {
+      return fallbackFly(colors, fromRects, toRects, meta);
+    }
+
+    async function handleTube(index) {
+      if (locked) return;
+
+      if (selected === null) {
+        if (!tubes[index].length) return showToast('Здесь пока нет гаек');
+        selected = index;
+        const groupCount = getTopGroupSize(tubes[index]);
+        window.NutSort.setHint(groupCount > 1 ? `Выбрана группа: ${nutWord(groupCount)}` : 'Выбери стержень для переноса');
+        render();
+        window.NutSort.pulseTube(index);
+        return;
+      }
+
+      if (selected === index) {
+        selected = null;
+        window.NutSort.setHint('Выбор отменён');
+        render();
+        return;
+      }
+
+      const from = selected;
+      const moveCount = getMoveCount(from, index);
+      if (!moveCount) {
+        selected = null;
+        window.NutSort.setHint('Такой ход нельзя сделать');
+        render();
+        const target = getTubeElement(index);
+        target?.classList.add('invalid');
+        setTimeout(() => target?.classList.remove('invalid'), 400);
+        return;
+      }
+
+      const fromEls = getNutElements(from).slice(-moveCount);
+      const fromRects = fromEls.map(el => el.getBoundingClientRect());
+      const movingNuts = tubes[from].slice(tubes[from].length - moveCount);
+
+      history.push({ state: cloneState(tubes), moves });
+      tubes[from].splice(tubes[from].length - moveCount, moveCount);
+      tubes[index].push(...movingNuts);
+      moves += 1;
+      selected = null;
+      locked = true;
+      arrival = { tube: index, start: tubes[index].length - moveCount, count: moveCount };
+      window.NutSort.setHint(moveCount > 1 ? `Перенесено сразу: ${nutWord(moveCount)}` : 'Хороший ход!');
+      render();
+
+      const toRects = getNutElements(index).slice(-moveCount).map(el => el.getBoundingClientRect());
+      await window.NutSort.animateTransfer(movingNuts, fromRects, toRects, { fromIndex: from, toIndex: index });
+
+      arrival = null;
+      locked = false;
+      render();
+
+      if (isSolved(tubes)) {
+        window.NutSort.showWin();
+      }
+    }
+
+    function start(nextLevel = level) {
+      level = nextLevel;
+      localStorage.setItem('nutSortLevel', String(level));
+      tubes = generateLevel(level);
+      initialTubes = cloneState(tubes);
+      history = [];
+      selected = null;
+      moves = 0;
+      locked = false;
+      introMode = true;
+      arrival = null;
+      winModal.classList.remove('show');
+      window.NutSort.setHint('Собери гайки одного цвета на каждом стержне');
+      render();
+      setTimeout(() => {
+        introMode = false;
+      }, 520);
+    }
+
+    function undo() {
+      if (locked) return;
+      const previous = history.pop();
+      if (!previous) return;
+      tubes = cloneState(previous.state);
+      moves = previous.moves;
+      selected = null;
+      arrival = null;
+      locked = false;
+      window.NutSort.setHint('Последний ход отменён');
+      render();
+    }
+
+    function restart() {
+      tubes = cloneState(initialTubes);
+      history = [];
+      selected = null;
+      arrival = null;
+      moves = 0;
+      locked = false;
+      introMode = true;
+      winModal.classList.remove('show');
+      window.NutSort.setHint('Уровень начат заново');
+      render();
+      setTimeout(() => {
+        introMode = false;
+      }, 520);
+    }
+
+    function getPossibleMoves() {
+      const result = [];
+      for (let from = 0; from < tubes.length; from++) {
+        for (let to = 0; to < tubes.length; to++) {
+          const count = getMoveCount(from, to);
+          if (!count) continue;
+          const color = topColor(tubes[from]);
+          const joinsSame = tubes[to].length > 0 && topColor(tubes[to]) === color;
+          const exposesDifferent = tubes[from].length > count && tubes[from][tubes[from].length - count - 1] !== color;
+          result.push({
+            from,
+            to,
+            count,
+            score: (count * 3) + (joinsSame ? 4 : 0) + (exposesDifferent ? 2 : 0) - (tubes[to].length === 0 ? 1 : 0)
+          });
+        }
+      }
+      return result.sort((a, b) => b.score - a.score);
+    }
+
+    function hint() {
+      if (locked) return;
+      const move = getPossibleMoves()[0];
+      if (!move) return showToast('Доступных ходов нет — попробуй отменить ход');
+      selected = move.from;
+      window.NutSort.setHint(`Подсказка: перенеси ${nutWord(move.count)} со стержня ${move.from + 1} на ${move.to + 1}`);
+      render();
+      const tube = getTubeElement(move.to);
+      tube?.animate([
+        { transform: 'scale(1)', filter: 'brightness(1)' },
+        { transform: 'scale(1.05)', filter: 'brightness(1.08)' },
+        { transform: 'scale(1)', filter: 'brightness(1)' }
+      ], {
+        duration: 820,
+        iterations: 2,
+        easing: 'cubic-bezier(.2,.9,.2,1)'
+      });
+    }
+
+    undoBtn.addEventListener('click', undo);
+    hintBtn.addEventListener('click', hint);
+    restartBtn.addEventListener('click', restart);
+    newBtn.addEventListener('click', () => start(level));
+    replayBtn.addEventListener('click', restart);
+    nextBtn.addEventListener('click', () => start(level + 1));
+
+    window.NutSort = {
+      COLORS,
+      CAPACITY,
+      boardEl,
+      hintline,
+      getTubeElement,
+      getNutElements,
+      fallbackFly,
+      animateTransfer,
+      pulseTube,
+      setHint,
+      showWin,
+      getState: () => ({ level, tubes: cloneState(tubes), moves, selected })
+    };
+
+    start(level);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.min.js"></script>
+  <script src="enhance-3d.js"></script>
+</body>
+</html>
