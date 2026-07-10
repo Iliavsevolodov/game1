@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <meta name="theme-color" content="#0f172a" />
   <title>Nut Sort — сортировка гаек</title>
   <style>
@@ -17,25 +17,52 @@
       --danger:#fb7185;
       --success:#4ade80;
       --shadow:0 22px 70px rgba(0,0,0,.38);
+      --app-height:100svh;
     }
 
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html, body { margin:0; min-height:100%; background:#0f172a; color:var(--text); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    body { min-height:100dvh; overflow-x:hidden; }
+    html, body {
+      margin:0;
+      width:100%;
+      height:100%;
+      background:#0f172a;
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow:hidden;
+      overscroll-behavior:none;
+      touch-action:manipulation;
+    }
+
+    body {
+      position:fixed;
+      inset:0;
+      -webkit-user-select:none;
+      user-select:none;
+    }
+
+    button {
+      font:inherit;
+      appearance:none;
+      -webkit-appearance:none;
+    }
 
     .app {
-      min-height:100dvh;
-      padding:max(18px, env(safe-area-inset-top)) 16px max(22px, env(safe-area-inset-bottom));
+      width:100%;
+      height:var(--app-height);
+      min-height:var(--app-height);
+      padding:max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
       background:
         radial-gradient(circle at 18% 0%, rgba(250,204,21,.16), transparent 28%),
         radial-gradient(circle at 82% 14%, rgba(56,189,248,.15), transparent 30%),
         radial-gradient(circle at 50% 100%, rgba(124,58,237,.16), transparent 38%),
         linear-gradient(180deg, var(--bg-1), var(--bg-2));
-      display:flex;
-      flex-direction:column;
-      gap:14px;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr) auto;
+      gap:12px;
       position:relative;
       isolation:isolate;
+      overflow:hidden;
+      contain:layout paint size;
     }
 
     .app::before {
@@ -57,7 +84,8 @@
       max-width:980px;
       width:100%;
       margin:0 auto;
-      animation:softDrop .55s cubic-bezier(.2,.9,.2,1) both;
+      animation:softFade .45s cubic-bezier(.2,.9,.2,1) both;
+      flex-shrink:0;
     }
 
     .brand { font-size:clamp(22px, 5vw, 34px); font-weight:1000; letter-spacing:-.045em; text-shadow:0 8px 30px rgba(0,0,0,.35); }
@@ -81,8 +109,10 @@
     .card {
       max-width:980px;
       width:100%;
+      height:100%;
+      min-height:0;
       margin:0 auto;
-      padding:14px;
+      padding:12px;
       border-radius:28px;
       border:1px solid var(--panel-border);
       background:
@@ -92,6 +122,9 @@
       box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.18);
       position:relative;
       overflow:hidden;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr);
+      contain:layout paint;
     }
 
     .card::before {
@@ -111,23 +144,30 @@
       text-align:center;
       color:var(--muted);
       font-weight:850;
-      min-height:26px;
-      margin-bottom:4px;
-      transition:transform .25s ease, color .25s ease;
+      min-height:28px;
+      line-height:28px;
+      margin-bottom:2px;
+      transition:color .25s ease, opacity .25s ease;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .hintline.pop { animation:hintPop .42s cubic-bezier(.2,.9,.2,1) both; }
+    .hintline.pop { animation:hintPop .34s cubic-bezier(.2,.9,.2,1) both; }
 
     .board {
       display:grid;
       grid-template-columns:repeat(auto-fit, minmax(72px, 1fr));
-      gap:22px 12px;
+      gap:18px 10px;
       align-items:end;
       justify-items:center;
-      min-height:450px;
-      padding:20px 4px 14px;
+      width:100%;
+      min-height:0;
+      padding:16px 4px 12px;
       position:relative;
       perspective:950px;
+      overflow:hidden;
+      contain:layout paint;
     }
 
     .tube {
@@ -142,15 +182,48 @@
       flex-direction:column;
       justify-content:flex-end;
       align-items:center;
-      transition:transform .24s cubic-bezier(.2,.9,.2,1), filter .24s ease;
+      transition:filter .22s ease;
       touch-action:manipulation;
       transform-style:preserve-3d;
+      transform:translateZ(0);
+      outline:none;
+      flex-shrink:0;
     }
 
-    .tube:hover { transform:translateY(-4px) rotateX(2deg); }
-    .tube.selected { transform:translateY(-13px) scale(1.035); filter:drop-shadow(0 18px 22px rgba(250,204,21,.30)); }
+    .tube::before {
+      content:"";
+      position:absolute;
+      inset:-10px 2px -4px;
+      border-radius:28px;
+      border:1px solid transparent;
+      background:linear-gradient(180deg, rgba(250,204,21,0), rgba(250,204,21,0));
+      opacity:0;
+      transition:opacity .22s ease, background .22s ease, border-color .22s ease;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    @media (hover:hover) and (pointer:fine) {
+      .tube:hover::before {
+        opacity:.55;
+        border-color:rgba(255,255,255,.10);
+        background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+      }
+    }
+
+    .tube.selected {
+      filter:drop-shadow(0 18px 22px rgba(250,204,21,.30));
+    }
+
+    .tube.selected::before {
+      opacity:1;
+      border-color:rgba(250,204,21,.55);
+      background:linear-gradient(180deg, rgba(250,204,21,.16), rgba(250,204,21,.035));
+      box-shadow:0 0 0 1px rgba(250,204,21,.06), 0 18px 38px rgba(250,204,21,.10);
+    }
+
     .tube.invalid { animation:shake .28s linear 1; }
-    .tube.tube-enter { animation:tubeIn .56s cubic-bezier(.18,.9,.22,1.18) both; }
+    .tube.tube-enter { animation:tubeInStable .5s cubic-bezier(.18,.9,.22,1.18) both; }
 
     .tube.complete::after {
       content:"✓";
@@ -254,7 +327,7 @@
         inset 8px 0 10px rgba(255,255,255,.10),
         inset -8px 0 10px rgba(0,0,0,.24),
         0 5px 8px rgba(0,0,0,.34);
-      transition:transform .28s cubic-bezier(.2,.9,.2,1), filter .28s ease, opacity .18s ease;
+      transition:transform .24s cubic-bezier(.2,.9,.2,1), filter .24s ease, opacity .18s ease;
       transform-style:preserve-3d;
       will-change:transform;
     }
@@ -286,10 +359,10 @@
       box-shadow:inset 0 3px 5px rgba(0,0,0,.68), 0 1px 2px rgba(255,255,255,.42);
     }
 
-    .nut.nut-enter { animation:nutDrop .58s cubic-bezier(.16,1.08,.28,1.08) both; }
+    .nut.nut-enter { animation:nutDropStable .52s cubic-bezier(.16,1.08,.28,1.08) both; }
     .nut.move-group { filter:brightness(1.08) saturate(1.08); }
-    .selected .nut.move-group { transform:translateY(-17px) rotateZ(-4deg) rotateX(16deg) scale(1.03); }
-    .selected .nut.move-group:nth-last-child(2) { transform:translateY(-14px) rotateZ(3deg) rotateX(14deg) scale(1.025); }
+    .selected .nut.move-group { transform:translateY(-16px) rotateZ(-4deg) rotateX(16deg) scale(1.03); }
+    .selected .nut.move-group:nth-last-child(2) { transform:translateY(-13px) rotateZ(3deg) rotateX(14deg) scale(1.025); }
     .landing-ghost { opacity:0; }
 
     .fly-nut {
@@ -299,6 +372,7 @@
       pointer-events:none;
       will-change:transform;
       filter:drop-shadow(0 24px 18px rgba(0,0,0,.35)) saturate(1.08);
+      contain:paint;
     }
 
     .controls {
@@ -308,7 +382,8 @@
       display:grid;
       grid-template-columns:repeat(4, minmax(0,1fr));
       gap:10px;
-      animation:softRise .5s cubic-bezier(.2,.9,.2,1) both;
+      animation:softFade .45s cubic-bezier(.2,.9,.2,1) both;
+      flex-shrink:0;
     }
 
     .btn {
@@ -318,16 +393,16 @@
       padding:10px 12px;
       background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.07));
       color:var(--text);
-      font:inherit;
       font-weight:900;
       cursor:pointer;
       box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.18);
-      transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+      transition:filter .16s ease, box-shadow .16s ease;
+      outline:none;
     }
-    .btn:hover { transform:translateY(-2px); box-shadow:0 14px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.22); }
-    .btn:active { transform:translateY(1px) scale(.99); }
+    .btn:hover { filter:brightness(1.06); box-shadow:0 14px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.22); }
+    .btn:active { filter:brightness(.96); }
     .btn.primary { background:linear-gradient(180deg,#fde047,#eab308); color:#201a00; border-color:transparent; box-shadow:0 14px 34px rgba(250,204,21,.24), inset 0 1px 0 rgba(255,255,255,.52); }
-    .btn:disabled { opacity:.42; cursor:not-allowed; transform:none; }
+    .btn:disabled { opacity:.42; cursor:not-allowed; filter:none; }
 
     .modal {
       position:fixed;
@@ -338,6 +413,7 @@
       background:rgba(2,6,23,.68);
       backdrop-filter:blur(10px);
       z-index:20;
+      overflow:hidden;
     }
     .modal.show { display:grid; }
     .modal-box {
@@ -350,7 +426,7 @@
         linear-gradient(180deg,#ffffff,#e5e7eb);
       color:#111827;
       box-shadow:0 34px 90px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.75);
-      animation:modalPop .48s cubic-bezier(.18,.9,.2,1.18) both;
+      animation:modalPopStable .42s cubic-bezier(.18,.9,.2,1.18) both;
       position:relative;
       overflow:hidden;
     }
@@ -398,33 +474,47 @@
     }
 
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px) rotateZ(-2deg)} 75%{transform:translateX(8px) rotateZ(2deg)} }
-    @keyframes softDrop { from{opacity:0; transform:translateY(-14px)} to{opacity:1; transform:none} }
-    @keyframes softRise { from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none} }
-    @keyframes tubeIn { from{opacity:0; transform:translateY(34px) scale(.94) rotateX(12deg)} to{opacity:1; transform:none} }
-    @keyframes nutDrop { 0%{opacity:0; transform:translateY(-48px) scale(.88) rotateZ(-10deg)} 68%{opacity:1; transform:translateY(4px) scale(1.04) rotateZ(3deg)} 100%{opacity:1; transform:none} }
+    @keyframes softFade { from{opacity:0} to{opacity:1} }
+    @keyframes tubeInStable { from{opacity:0; filter:blur(6px)} to{opacity:1; filter:none} }
+    @keyframes nutDropStable { 0%{opacity:0; transform:translateY(-28px) scale(.9) rotateZ(-8deg)} 68%{opacity:1; transform:translateY(3px) scale(1.035) rotateZ(2deg)} 100%{opacity:1; transform:none} }
     @keyframes completePop { 0%{opacity:0; transform:scale(.2) rotate(-30deg)} 70%{opacity:1; transform:scale(1.18) rotate(8deg)} 100%{opacity:1; transform:scale(1) rotate(0)} }
-    @keyframes modalPop { from{opacity:0; transform:translateY(22px) scale(.92)} to{opacity:1; transform:none} }
-    @keyframes hintPop { 0%{transform:scale(.98); color:var(--muted)} 50%{transform:scale(1.035); color:#fff} 100%{transform:scale(1); color:var(--muted)} }
+    @keyframes modalPopStable { from{opacity:0; transform:scale(.94)} to{opacity:1; transform:none} }
+    @keyframes hintPop { 0%{opacity:.72; color:var(--muted)} 50%{opacity:1; color:#fff} 100%{opacity:1; color:var(--muted)} }
     @keyframes shine { from{transform:translateX(0) rotate(18deg)} to{transform:translateX(260%) rotate(18deg)} }
     @keyframes confettiFall { to{transform:translate3d(var(--drift), 108vh, 0) rotate(740deg); opacity:.15} }
 
     @media (max-width:600px) {
+      .app { padding:max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); gap:10px; }
       .topbar { grid-template-columns:1fr auto; }
-      .level-pill { order:3; grid-column:1/-1; }
+      .level-pill { order:3; grid-column:1/-1; padding:7px 12px; }
       .stats { font-size:12px; }
       .stats strong { font-size:16px; }
-      .card { padding:10px 8px; border-radius:22px; }
-      .board { grid-template-columns:repeat(4,1fr); gap:18px 2px; min-height:430px; }
+      .card { padding:9px 7px; border-radius:22px; }
+      .hintline { min-height:26px; line-height:26px; font-size:13px; }
+      .board { grid-template-columns:repeat(4,1fr); gap:14px 2px; padding:12px 2px 8px; }
       .tube { width:68px; height:205px; }
       .rod { height:180px; }
       .nut { width:54px; height:33px; }
       .base { width:58px; }
-      .controls { grid-template-columns:repeat(2,1fr); }
+      .controls { grid-template-columns:repeat(2,1fr); gap:8px; }
+      .btn { min-height:48px; border-radius:16px; font-size:14px; }
+    }
+
+    @media (max-height:720px) {
+      .tube { height:190px; }
+      .rod { height:166px; }
+      .nut { width:52px; height:32px; }
+      .base { width:58px; height:18px; }
+      .board { gap:12px 2px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
     }
   </style>
 </head>
 <body>
-  <main class="app">
+  <main class="app" id="app">
     <header class="topbar">
       <div class="brand">NUT <span>SORT</span></div>
       <div class="level-pill">Уровень <span id="level">1</span></div>
@@ -462,6 +552,7 @@
     const COLORS = ['#22c55e','#8b5cf6','#ef4444','#06b6d4','#facc15','#f97316','#ec4899','#3b82f6'];
     const CAPACITY = 5;
 
+    const appEl = document.getElementById('app');
     const boardEl = document.getElementById('board');
     const movesEl = document.getElementById('moves');
     const levelEl = document.getElementById('level');
@@ -479,6 +570,26 @@
     let locked = false;
     let introMode = false;
     let arrival = null;
+    let viewportTimer = null;
+
+    function setStableViewportHeight() {
+      clearTimeout(viewportTimer);
+      viewportTimer = setTimeout(() => {
+        document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+      }, 80);
+    }
+
+    window.addEventListener('resize', setStableViewportHeight, { passive:true });
+    window.addEventListener('orientationchange', setStableViewportHeight, { passive:true });
+    setStableViewportHeight();
+
+    function preserveViewport(callback) {
+      const active = document.activeElement;
+      callback();
+      if (active && active instanceof HTMLElement) active.blur();
+      window.scrollTo(0, 0);
+      appEl.scrollTop = 0;
+    }
 
     function cloneState(state) { return state.map(t => [...t]); }
     function randomInt(max) { return Math.floor(Math.random() * max); }
@@ -514,20 +625,22 @@
     }
 
     function startLevel(newLevel = level) {
-      level = newLevel;
-      localStorage.setItem('nutSortLevel', String(level));
-      tubes = generateLevel(level);
-      initialTubes = cloneState(tubes);
-      history = [];
-      selected = null;
-      moves = 0;
-      locked = false;
-      arrival = null;
-      introMode = true;
-      winModal.classList.remove('show');
-      setHint('Собери гайки одного цвета на каждом стержне');
-      render();
-      setTimeout(() => introMode = false, 760);
+      preserveViewport(() => {
+        level = newLevel;
+        localStorage.setItem('nutSortLevel', String(level));
+        tubes = generateLevel(level);
+        initialTubes = cloneState(tubes);
+        history = [];
+        selected = null;
+        moves = 0;
+        locked = false;
+        arrival = null;
+        introMode = true;
+        winModal.classList.remove('show');
+        setHint('Собери гайки одного цвета на каждом стержне');
+        render();
+      });
+      setTimeout(() => introMode = false, 680);
     }
 
     function render() {
@@ -539,12 +652,13 @@
       tubes.forEach((tube, index) => {
         const button = document.createElement('button');
         button.className = 'tube';
+        button.type = 'button';
         button.style.setProperty('--tube-i', index);
         button.setAttribute('aria-label', `Стержень ${index + 1}`);
         if (selected === index) button.classList.add('selected');
         if (introMode) {
           button.classList.add('tube-enter');
-          button.style.animationDelay = `${index * 42}ms`;
+          button.style.animationDelay = `${index * 34}ms`;
         }
         if (tube.length === CAPACITY && tube.every(v => v === tube[0])) button.classList.add('complete');
 
@@ -565,14 +679,17 @@
           if (arrival && arrival.tube === index && nutIndex >= arrival.start && nutIndex < arrival.start + arrival.count) nut.classList.add('landing-ghost');
           if (introMode) {
             nut.classList.add('nut-enter');
-            nut.style.animationDelay = `${120 + index * 34 + nutIndex * 38}ms`;
+            nut.style.animationDelay = `${90 + index * 28 + nutIndex * 32}ms`;
           }
           nut.style.setProperty('--c', COLORS[colorIndex]);
           nuts.appendChild(nut);
         });
 
         button.append(rod, base, nuts);
-        button.addEventListener('click', () => handleTube(index));
+        button.addEventListener('click', event => {
+          event.preventDefault();
+          handleTube(index);
+        });
         boardEl.appendChild(button);
       });
     }
@@ -613,29 +730,35 @@
 
       if (selected === null) {
         if (tubes[index].length === 0) return showToast('Здесь пока нет гаек');
-        selected = index;
-        const groupCount = getTopGroupSize(tubes[index]);
-        setHint(groupCount > 1
-          ? `Выбрана группа: ${formatNutCount(groupCount)} одного цвета`
-          : 'Теперь выбери стержень, куда перенести гайку');
-        render();
+        preserveViewport(() => {
+          selected = index;
+          const groupCount = getTopGroupSize(tubes[index]);
+          setHint(groupCount > 1
+            ? `Выбрана группа: ${formatNutCount(groupCount)} одного цвета`
+            : 'Теперь выбери стержень, куда перенести гайку');
+          render();
+        });
         pulseTube(index);
         return;
       }
 
       if (selected === index) {
-        selected = null;
-        setHint('Выбор отменён');
-        render();
+        preserveViewport(() => {
+          selected = null;
+          setHint('Выбор отменён');
+          render();
+        });
         return;
       }
 
       const from = selected;
       const moveCount = getMoveCount(from, index);
       if (!moveCount) {
-        selected = null;
-        setHint('Такой ход нельзя сделать');
-        render();
+        preserveViewport(() => {
+          selected = null;
+          setHint('Такой ход нельзя сделать');
+          render();
+        });
         const target = boardEl.children[index];
         target?.classList.add('invalid');
         setTimeout(() => target?.classList.remove('invalid'), 300);
@@ -646,23 +769,27 @@
       const fromRects = fromEls.map(el => el.getBoundingClientRect());
       const movingNuts = tubes[from].slice(tubes[from].length - moveCount);
 
-      history.push({ state: cloneState(tubes), moves });
-      tubes[from].splice(tubes[from].length - moveCount, moveCount);
-      tubes[index].push(...movingNuts);
-      moves++;
-      selected = null;
-      locked = true;
-      arrival = { tube:index, start:tubes[index].length - moveCount, count:moveCount };
-      setHint(moveCount > 1 ? `Перенесено сразу: ${formatNutCount(moveCount)}` : 'Хороший ход!');
-      render();
+      preserveViewport(() => {
+        history.push({ state: cloneState(tubes), moves });
+        tubes[from].splice(tubes[from].length - moveCount, moveCount);
+        tubes[index].push(...movingNuts);
+        moves++;
+        selected = null;
+        locked = true;
+        arrival = { tube:index, start:tubes[index].length - moveCount, count:moveCount };
+        setHint(moveCount > 1 ? `Перенесено сразу: ${formatNutCount(moveCount)}` : 'Хороший ход!');
+        render();
+      });
 
       const toEls = getNutElements(index).slice(-moveCount);
       const toRects = toEls.map(el => el.getBoundingClientRect());
       await animateFlyingNuts(movingNuts, fromRects, toRects);
 
-      arrival = null;
-      locked = false;
-      render();
+      preserveViewport(() => {
+        arrival = null;
+        locked = false;
+        render();
+      });
 
       if (isSolved(tubes)) triggerWin();
     }
@@ -688,10 +815,10 @@
 
         const dx = to.left - from.left;
         const dy = to.top - from.top;
-        const lift = Math.min(150, 72 + Math.abs(dx) * .32 + i * 8);
-        const spin = (i % 2 === 0 ? 16 : -16) + i * 4;
-        const duration = 520 + i * 65;
-        const delay = i * 42;
+        const lift = Math.min(130, 64 + Math.abs(dx) * .28 + i * 7);
+        const spin = (i % 2 === 0 ? 14 : -14) + i * 4;
+        const duration = 500 + i * 58;
+        const delay = i * 38;
 
         const animation = clone.animate([
           { transform:'translate3d(0,0,0) scale(1) rotateX(0deg) rotateZ(0deg)', offset:0, easing:'cubic-bezier(.2,.9,.2,1)' },
@@ -708,10 +835,10 @@
     function pulseTube(index) {
       const tube = boardEl.children[index];
       tube?.animate([
-        { transform:'translateY(-13px) scale(1.035)' },
-        { transform:'translateY(-17px) scale(1.065)' },
-        { transform:'translateY(-13px) scale(1.035)' }
-      ], { duration:360, easing:'cubic-bezier(.2,.9,.2,1)' });
+        { filter:'drop-shadow(0 18px 22px rgba(250,204,21,.24)) brightness(1)' },
+        { filter:'drop-shadow(0 20px 28px rgba(250,204,21,.42)) brightness(1.08)' },
+        { filter:'drop-shadow(0 18px 22px rgba(250,204,21,.30)) brightness(1)' }
+      ], { duration:340, easing:'cubic-bezier(.2,.9,.2,1)' });
     }
 
     function isSolved(state) {
@@ -728,27 +855,31 @@
       if (locked) return;
       const previous = history.pop();
       if (!previous) return;
-      tubes = cloneState(previous.state);
-      moves = previous.moves;
-      selected = null;
-      arrival = null;
-      locked = false;
-      setHint('Последний ход отменён');
-      render();
+      preserveViewport(() => {
+        tubes = cloneState(previous.state);
+        moves = previous.moves;
+        selected = null;
+        arrival = null;
+        locked = false;
+        setHint('Последний ход отменён');
+        render();
+      });
     }
 
     function restart() {
-      tubes = cloneState(initialTubes);
-      history = [];
-      selected = null;
-      arrival = null;
-      moves = 0;
-      locked = false;
-      introMode = true;
-      winModal.classList.remove('show');
-      setHint('Уровень начат заново');
-      render();
-      setTimeout(() => introMode = false, 760);
+      preserveViewport(() => {
+        tubes = cloneState(initialTubes);
+        history = [];
+        selected = null;
+        arrival = null;
+        moves = 0;
+        locked = false;
+        introMode = true;
+        winModal.classList.remove('show');
+        setHint('Уровень начат заново');
+        render();
+      });
+      setTimeout(() => introMode = false, 680);
     }
 
     function getPossibleMoves() {
@@ -770,14 +901,16 @@
       if (locked) return;
       const move = getPossibleMoves()[0];
       if (!move) return showToast('Доступных ходов нет — попробуй отменить ход');
-      selected = move.from;
-      setHint(`Подсказка: перенеси ${formatNutCount(move.count)} со стержня ${move.from + 1} на ${move.to + 1}`);
-      render();
+      preserveViewport(() => {
+        selected = move.from;
+        setHint(`Подсказка: перенеси ${formatNutCount(move.count)} со стержня ${move.from + 1} на ${move.to + 1}`);
+        render();
+      });
       const target = boardEl.children[move.to];
       target?.animate([
-        { transform:'translateY(0) scale(1)' },
-        { transform:'translateY(-12px) scale(1.05)' },
-        { transform:'translateY(0) scale(1)' }
+        { filter:'brightness(1)' },
+        { filter:'brightness(1.18) drop-shadow(0 18px 22px rgba(56,189,248,.30))' },
+        { filter:'brightness(1)' }
       ], { duration:650, iterations:2, easing:'cubic-bezier(.2,.9,.2,1)' });
     }
 
@@ -810,12 +943,15 @@
       }
     }
 
-    document.getElementById('undoBtn').addEventListener('click', undo);
-    document.getElementById('hintBtn').addEventListener('click', showHint);
-    document.getElementById('restartBtn').addEventListener('click', restart);
-    document.getElementById('newBtn').addEventListener('click', () => startLevel(level));
-    document.getElementById('replayBtn').addEventListener('click', restart);
-    document.getElementById('nextBtn').addEventListener('click', () => startLevel(level + 1));
+    document.getElementById('undoBtn').addEventListener('click', event => { event.preventDefault(); undo(); });
+    document.getElementById('hintBtn').addEventListener('click', event => { event.preventDefault(); showHint(); });
+    document.getElementById('restartBtn').addEventListener('click', event => { event.preventDefault(); restart(); });
+    document.getElementById('newBtn').addEventListener('click', event => { event.preventDefault(); startLevel(level); });
+    document.getElementById('replayBtn').addEventListener('click', event => { event.preventDefault(); restart(); });
+    document.getElementById('nextBtn').addEventListener('click', event => { event.preventDefault(); startLevel(level + 1); });
+
+    document.addEventListener('gesturestart', event => event.preventDefault());
+    document.addEventListener('touchmove', event => event.preventDefault(), { passive:false });
 
     startLevel(level);
   </script>
