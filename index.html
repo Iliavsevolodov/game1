@@ -53,5 +53,8 @@
     function confetti(){const cs=['#facc15','#22c55e','#38bdf8','#8b5cf6','#ef4444','#ec4899'];for(let i=0;i<54;i++){const p=document.createElement('div');p.className='confetti';p.style.left=`${Math.random()*100}%`;p.style.setProperty('--confetti',cs[i%cs.length]);p.style.setProperty('--drift',`${(Math.random()*2-1)*120}px`);p.style.setProperty('--fall',`${1.4+Math.random()*1.4}s`);p.style.animationDelay=`${Math.random()*.28}s`;document.body.appendChild(p);setTimeout(()=>p.remove(),3200)}}
     document.getElementById('undoBtn').addEventListener('click',undo);document.getElementById('hintBtn').addEventListener('click',hint);document.getElementById('restartBtn').addEventListener('click',restart);document.getElementById('newBtn').addEventListener('click',()=>start(level));document.getElementById('replayBtn').addEventListener('click',restart);document.getElementById('nextBtn').addEventListener('click',()=>start(level+1));start(level);
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="enhance-3d.js"></script>
 </body>
 </html>
